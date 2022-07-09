@@ -1,0 +1,4 @@
+enum AppBarMenuAction {
+  logout,
+  settings,
+}
