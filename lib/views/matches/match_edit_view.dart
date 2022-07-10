@@ -19,6 +19,7 @@ class MatchEditView extends StatelessWidget {
           showAppBarPopupMenu(),
         ],
       ),
+      body: SingleChildScrollView(),
     );
   }
 }
