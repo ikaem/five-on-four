@@ -24,7 +24,7 @@ class AppRouter {
     Navigator.of(context).pushNamed(Routes.matchViewRoute);
   }
 
-  static void toMatchEdit(BuildContext context, String matchId) {
+  static void toMatchEdit(BuildContext context, String? matchId) {
     // here we could say that if match id is passed, this should be editroute, and if not, it is a create route
     Navigator.of(context).pushNamed(Routes.matchEditRoute);
   }
