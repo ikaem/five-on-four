@@ -1,12 +1,12 @@
-import 'package:five_on_four/features/matches/models/player.dart';
-import 'package:five_on_four/utils/app_bar/show_app_bar_popup_menu.dart';
+import 'package:five_on_four/features/matches/domain/models/player.dart';
+import 'package:five_on_four/widgets/app_bar_popup_menu/app_bar_popup_menu.dart';
 import 'package:five_on_four/widgets/text_with_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class MatchView extends StatelessWidget {
-  const MatchView({Key? key}) : super(key: key);
+class MatchScreen extends StatelessWidget {
+  const MatchScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,9 @@ class MatchView extends StatelessWidget {
       appBar: AppBar(
         title: const Text("View match"),
         centerTitle: true,
-        actions: <Widget>[showAppBarPopupMenu()],
+        actions: <Widget>[
+          AppBarPopupMenu(),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),

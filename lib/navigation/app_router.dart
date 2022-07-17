@@ -1,7 +1,7 @@
 import 'package:five_on_four/navigation/routes.dart';
-import 'package:five_on_four/views/home_view.dart';
-import 'package:five_on_four/views/matches/match_edit_view.dart';
-import 'package:five_on_four/views/matches/match_view.dart';
+import 'package:five_on_four/screens/home_screen.dart';
+import 'package:five_on_four/screens/matches/match_edit_screen.dart';
+import 'package:five_on_four/screens/matches/match_screen.dart';
 import 'package:flutter/cupertino.dart';
 
 typedef RoutesMap = Map<String, Widget Function(BuildContext)>;
@@ -10,9 +10,9 @@ class AppRouter {
   static RoutesMap generateRoutes(BuildContext context) {
     return {
       // TODO views should probably be called screens or some such
-      Routes.homeRoute: (context) => HomeView(),
-      Routes.matchEditRoute: (context) => MatchEditView(),
-      Routes.matchViewRoute: (context) => MatchView(),
+      Routes.homeRoute: (context) => HomeScreen(),
+      Routes.matchEditRoute: (context) => MatchEditScreen(),
+      Routes.matchViewRoute: (context) => MatchScreen(),
     };
   }
 
