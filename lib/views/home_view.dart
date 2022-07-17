@@ -3,6 +3,7 @@ import 'package:five_on_four/constants/user_match_action_labels.dart';
 import 'package:five_on_four/enums/app_bar_menu_action.dart';
 import 'package:five_on_four/extensions/formatting/string.dart';
 import 'package:five_on_four/models/match.dart';
+import 'package:five_on_four/navigation/app_router.dart';
 import 'package:five_on_four/typedefs/user_match_action.dart';
 import 'package:five_on_four/utils/app_bar/show_app_bar_popup_menu.dart';
 import 'package:flutter/cupertino.dart';
@@ -28,7 +29,8 @@ class HomeView extends StatelessWidget {
         child: Icon(Icons.add),
         onPressed: () {
           // TODO here we should also provide info whether we want to create new or edit
-          Navigator.of(context).pushNamed(matchEditRoute);
+          // Navigator.of(context).pushNamed(matchEditRoute);
+          AppRouter.toMatchEdit(context, "3");
         },
       ),
       // TODO body matches does need to be scrollable
@@ -86,17 +88,20 @@ class HomeView extends StatelessWidget {
                         const SizedBox(
                           height: 3,
                         ),
-                        _renderMatchInviteNotification(
+                        _renderMatchInviteNotification(context,
+                            matchId: "test",
                             matchName: "MatchName",
                             city: "city",
                             dateString: "22/07/2022",
                             timeString: "18:30"),
-                        _renderMatchInviteNotification(
+                        _renderMatchInviteNotification(context,
+                            matchId: "test",
                             matchName: "MatchName",
                             city: "city",
                             dateString: "22/07/2022",
                             timeString: "18:30"),
-                        _renderMatchInviteNotification(
+                        _renderMatchInviteNotification(context,
+                            matchId: "test",
                             matchName: "MatchName",
                             city: "city",
                             dateString: "22/07/2022",
@@ -119,6 +124,7 @@ class HomeView extends StatelessWidget {
                     ),
                     // this should be a widget or a function that returns widget, we will see
                     _renderMatchBrief(context,
+                        matchId: "test",
                         matchName: "Some match",
                         city: "Zagreb",
                         dateString: "20/08/2022",
@@ -178,6 +184,7 @@ class HomeView extends StatelessWidget {
               ),
               _renderMatchBrief(
                 context,
+                matchId: match.id,
                 matchName: match.name,
                 city: match.location,
                 dateString: match.date,
@@ -257,7 +264,9 @@ class HomeView extends StatelessWidget {
   }
 
   // this should also actually bi clickable - so probably better text button
-  Widget _renderMatchInviteNotification({
+  Widget _renderMatchInviteNotification(
+    BuildContext context, {
+    required String matchId,
     required String matchName,
     required String city,
     required String dateString,
@@ -276,6 +285,7 @@ class HomeView extends StatelessWidget {
         ),
         onPressed: () {
           // this should eventually navigate to a match
+          AppRouter.toMatch(context, matchId);
         },
         child: Text(matchLabel),
       ),
@@ -284,6 +294,7 @@ class HomeView extends StatelessWidget {
 
   Widget _renderMatchBrief(
     BuildContext context, {
+    required String matchId,
     required String matchName,
     required String city,
     required String dateString,
@@ -298,10 +309,15 @@ class HomeView extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Text(matchLabel, style: Theme.of(context).textTheme.headline6),
-        // this will eventually be a button to open maps or something like that
-        // TextButton(onPressed: () {}, child: Text("Zagreb, Sportski centar Trnje"))
+        TextButton(
+          onPressed: () {
+            AppRouter.toMatch(context, matchId);
+          },
+          child: Text(matchLabel, style: Theme.of(context).textTheme.headline6),
+          style: TextButton.styleFrom(padding: EdgeInsets.all(0)),
+        ),
         SizedBox(
           height: 30,
           child: TextButton.icon(
