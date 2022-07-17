@@ -1,3 +1,4 @@
+import 'package:five_on_four/constants/routes.dart';
 import 'package:five_on_four/constants/user_match_action_labels.dart';
 import 'package:five_on_four/enums/app_bar_menu_action.dart';
 import 'package:five_on_four/extensions/formatting/string.dart';
@@ -23,6 +24,13 @@ class HomeView extends StatelessWidget {
 // and put it in utils folder somewhere
             showAppBarPopupMenu(),
           ]),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          // TODO here we should also provide info whether we want to create new or edit
+          Navigator.of(context).pushNamed(matchEditRoute);
+        },
+      ),
       // TODO body matches does need to be scrollable
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

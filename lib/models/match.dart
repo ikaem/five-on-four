@@ -58,6 +58,7 @@ class Match {
   }
 }
 
+// TODO just for intial mock in dev
 final List<dynamic> parsedJson = jsonDecode(testJson);
 
 final testList = parsedJson.map<Match>((m) {
