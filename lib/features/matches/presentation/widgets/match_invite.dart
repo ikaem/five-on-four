@@ -1,12 +1,10 @@
 import 'package:five_on_four/navigation/index.dart';
 import "package:five_on_four/features/matches/index.dart" show Match;
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class MatchInvite extends StatelessWidget {
   final Match match;
-  const MatchInvite({Key? key, required Match this.match}) : super(key: key);
+  const MatchInvite({Key? key, required this.match}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
