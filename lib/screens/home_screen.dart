@@ -1,18 +1,15 @@
-import 'package:five_on_four/constants/routes.dart';
-import 'package:five_on_four/constants/user_match_action_labels.dart';
-import 'package:five_on_four/enums/app_bar_menu_action.dart';
-import 'package:five_on_four/extensions/formatting/string.dart';
-import 'package:five_on_four/models/match.dart';
+import 'package:five_on_four/features/matches/domain/models/match.dart';
+import 'package:five_on_four/features/matches/index.dart';
+import 'package:five_on_four/features/matches/presentation/widgets/match_brief.dart';
 import 'package:five_on_four/navigation/app_router.dart';
-import 'package:five_on_four/typedefs/user_match_action.dart';
-import 'package:five_on_four/utils/app_bar/show_app_bar_popup_menu.dart';
+import 'package:five_on_four/widgets/app_bar_popup_menu/app_bar_popup_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class HomeView extends StatelessWidget {
-  const HomeView({Key? key}) : super(key: key);
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +20,7 @@ class HomeView extends StatelessWidget {
           actions: <Widget>[
 // TODO build a function to create this popup menu to be reused for all screens
 // and put it in utils folder somewhere
-            showAppBarPopupMenu(),
+            AppBarPopupMenu(),
           ]),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
@@ -56,57 +53,48 @@ class HomeView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   key: const Key("matches-user"),
                   children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      key: const Key("matches-joined"),
-                      children: <Widget>[
-                        Text(
-                          "Joined matches",
-                          style: Theme.of(context).textTheme.labelMedium,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Text("Today: 2"),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Text("This week: 4"),
-                      ],
+                    Flexible(
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        key: const Key("matches-joined"),
+                        children: <Widget>[
+                          Text(
+                            "Joined matches",
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text("Today: 2"),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text("This week: 4"),
+                        ],
+                      ),
                     ),
                     const SizedBox(
                       width: 20,
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      key: const Key("matches-invited"),
-                      children: <Widget>[
-                        Text(
-                          "You have 3 match invitations",
-                          style: Theme.of(context).textTheme.labelMedium,
-                        ),
-                        const SizedBox(
-                          height: 3,
-                        ),
-                        _renderMatchInviteNotification(context,
-                            matchId: "test",
-                            matchName: "MatchName",
-                            city: "city",
-                            dateString: "22/07/2022",
-                            timeString: "18:30"),
-                        _renderMatchInviteNotification(context,
-                            matchId: "test",
-                            matchName: "MatchName",
-                            city: "city",
-                            dateString: "22/07/2022",
-                            timeString: "18:30"),
-                        _renderMatchInviteNotification(context,
-                            matchId: "test",
-                            matchName: "MatchName",
-                            city: "city",
-                            dateString: "22/07/2022",
-                            timeString: "18:30"),
-                      ],
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        key: const Key("matches-invited"),
+                        children: <Widget>[
+                          Text(
+                            "You have 3 match invitations",
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
+                          const SizedBox(
+                            height: 3,
+                          ),
+                          MatchInvite(match: testList[0]),
+                          MatchInvite(match: testList[1]),
+                          MatchInvite(match: testList[2]),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -122,20 +110,21 @@ class HomeView extends StatelessWidget {
                     const SizedBox(
                       height: 10,
                     ),
-                    // this should be a widget or a function that returns widget, we will see
-                    _renderMatchBrief(context,
-                        matchId: "test",
-                        matchName: "Some match",
-                        city: "Zagreb",
-                        dateString: "20/08/2022",
-                        timeString: "18:30",
+                    MatchBrief(
+                      match: Match(
+                        id: "test",
+                        date: "20/08/2022",
+                        name: "Test upcoming match",
+                        time: "18:30",
+                        location: "Location",
                         maxPlayers: 12,
-                        joinedPlayers: 7,
-                        // TODO this labl will need to be calculated eventually
-                        actionLabel: userMatchUnjoinLabel,
-                        userMatchAction: () async {
-                      // action to unjoin here
-                    }),
+                        description: "QQuick Lorem Ipsum here",
+                        organizerPhoneNumber: "123456789",
+                        players: ["Luka", "Ivan", "Martina"],
+                      ),
+                      playerMatchActionLabel: PlayerMatchAction.unjoin,
+                      handlePlayerMatchAction: () async {},
+                    )
                   ],
                 )
                 // this is a match widget now
@@ -174,26 +163,16 @@ class HomeView extends StatelessWidget {
 
           final match = testList[index];
 
-          // return Text(match.name);
-
           return Column(
             children: [
               Divider(),
               SizedBox(
                 height: 10,
               ),
-              _renderMatchBrief(
-                context,
-                matchId: match.id,
-                matchName: match.name,
-                city: match.location,
-                dateString: match.date,
-                timeString: match.time,
-                maxPlayers: match.maxPlayers,
-                joinedPlayers: match.players.length,
-                actionLabel: userMatchJoinLabel,
-                // TODO label and action will need to be calculated
-                userMatchAction: () async {},
+              MatchBrief(
+                match: match,
+                playerMatchActionLabel: PlayerMatchAction.join,
+                handlePlayerMatchAction: () async {},
               ),
             ],
           );
@@ -263,35 +242,6 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  // this should also actually bi clickable - so probably better text button
-  Widget _renderMatchInviteNotification(
-    BuildContext context, {
-    required String matchId,
-    required String matchName,
-    required String city,
-    required String dateString,
-    required String timeString,
-  }) {
-    final matchLabel = "$matchName, $city, $dateString, $timeString";
-
-    return SizedBox(
-      height: 30,
-      child: TextButton(
-        style: ButtonStyle(
-          // padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(1)),
-          padding: MaterialStateProperty.all<EdgeInsets>(
-              const EdgeInsets.only(top: 5, bottom: 5)),
-          // fixedSize: MaterialStateProperty.<Size>(Size())
-        ),
-        onPressed: () {
-          // this should eventually navigate to a match
-          AppRouter.toMatch(context, matchId);
-        },
-        child: Text(matchLabel),
-      ),
-    );
-  }
-
   Widget _renderMatchBrief(
     BuildContext context, {
     required String matchId,
@@ -302,7 +252,7 @@ class HomeView extends StatelessWidget {
     required int maxPlayers,
     required int joinedPlayers,
     required String actionLabel,
-    required UserMatchAction userMatchAction,
+    required HandlePlayerMatchAction userMatchAction,
   }) {
     final matchLabel = "$matchName, $dateString, $timeString";
     final playersLabel = "$maxPlayers players max, $joinedPlayers joined";

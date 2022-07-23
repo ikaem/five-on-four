@@ -1,11 +1,11 @@
 // TODO temp stateless widget
-import 'package:five_on_four/utils/app_bar/show_app_bar_popup_menu.dart';
+import 'package:five_on_four/widgets/app_bar_popup_menu/app_bar_popup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class MatchEditView extends StatelessWidget {
-  const MatchEditView({Key? key}) : super(key: key);
+class MatchEditScreen extends StatelessWidget {
+  const MatchEditScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class MatchEditView extends StatelessWidget {
         title: const Text("Create match"),
         centerTitle: true,
         actions: <Widget>[
-          showAppBarPopupMenu(),
+          AppBarPopupMenu(),
         ],
       ),
       body: Padding(
