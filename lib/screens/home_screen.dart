@@ -112,7 +112,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     MatchBrief(
                       match: Match(
-                        id: "test",
+                        id: 1,
                         date: "20/08/2022",
                         name: "Test upcoming match",
                         time: "18:30",
@@ -244,7 +244,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _renderMatchBrief(
     BuildContext context, {
-    required String matchId,
+    required int matchId,
     required String matchName,
     required String city,
     required String dateString,

@@ -20,7 +20,7 @@ class AppRouter {
     Navigator.of(context).pushNamed(Routes.homeRoute);
   }
 
-  static void toMatch(BuildContext context, String matchId) {
+  static void toMatch(BuildContext context, int matchId) {
     Navigator.of(context).pushNamed(Routes.matchViewRoute);
   }
 
