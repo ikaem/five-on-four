@@ -34,7 +34,7 @@ class Db {
     print("test");
     if (_db != null) throw DatabaseAlreadyOpenException();
 
-    print("passed: $db");
+    print("passed: $_db");
 
     try {
       final docsPath = await getApplicationDocumentsDirectory();
@@ -51,7 +51,7 @@ class Db {
       print("passed creaing tables");
 
       // TODO here check if this is dev envrionment
-      await _seedData(db);
+      // await _seedData(db);
 
       // TODO we only want to seed this data if we are in development
       // TODO how to check if we are in development
@@ -148,7 +148,7 @@ class Db {
       // print("added matches - $insertedMatchesRows");
 
       for (var matchRow in insertedMatchesRows) {
-        print("this is match row: $matchRow");
+        // print("this is match row: $matchRow");
         await trx.rawInsert(Seed.insertMatchPlayers(matchRow["id"] as int));
       }
     });
@@ -161,4 +161,4 @@ class Db {
 // TODO also, could we pass a db to the data repository in matches feature, as a dependency injection? where would this be passed from? from the provider?
 // for instsance, if in testing i just wand a fake database, which would return predefined stuff when a method is called
 // but how can we then make stuff generic?
-final db = Db();
+// final db = Db();

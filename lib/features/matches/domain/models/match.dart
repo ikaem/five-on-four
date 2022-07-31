@@ -1,7 +1,13 @@
 import 'dart:convert';
 
+import 'package:five_on_four/features/matches/constants/index.dart';
 import 'package:five_on_four/features/matches/data/repositories/database/constants.dart';
+import 'package:five_on_four/features/matches/domain/index.dart';
+import 'package:five_on_four/services/dev/dev_service.dart';
+import 'package:flutter/cupertino.dart';
 
+// WE DONT WANT WIDGETS TO MUTATE STAT OF THESE FIELDS
+// @immutable
 class Match {
   late final int id;
   late final String date;
@@ -14,7 +20,8 @@ class Match {
   late final String organizerPhoneNumber;
 // TODO will need to create model for players later
 // inivted; joined, waiting list, declined - need to make statuses for those, too
-  late final List<String> players;
+  // late final List<String> players;
+  late final List<Player> players;
 
   Match({
     required this.id,
@@ -30,7 +37,8 @@ class Match {
 
   // named cosntructor could return - this is just example to have both
   // which is better
-  Match.fromDbRow(Map<String, Object?> row) {
+  // TODO not using tis at all
+  Match.fromDbRowWithEmptyPlayers(Map<String, Object?> row) {
     id = row[MatchColumn.id] as int;
     date = row[MatchColumn.date] as String;
     time = row[MatchColumn.time] as String;
@@ -41,7 +49,10 @@ class Match {
     organizerPhoneNumber = row[MatchColumn.phoneNumber] as String;
     // TODO tis should probably be of some player type - so then just get all players data?
     //
-    players = row[MatchColumn.players] as List<String>;
+    // players = row[MatchColumn.players] as List<String>;
+    players = [];
+
+    // devService.log("players: ${row[MatchColumn.players]}");
   }
 
 // TODO factory does not necessarily have to return instance of the class
@@ -57,12 +68,17 @@ class Match {
     final organizerPhoneNumber = json['organizerPhoneNumber'];
     // print('json players: ${json["players"]}');
 
-    Iterable players = json["players"];
+    // Iterable players = json["players"];
     // print("palyers again: $players");
 
-    List<String> newPlayers = players.map<String>((p) {
-      return p.toString();
-    }).toList();
+    // List<Player> newPlayers = players.map<Player>((p) {
+    //   // return p.toString();
+    //   return Player(
+    //     id: "id",
+    //     nickname: p,
+    //     matchStatus: PlayerMatchStatus.joined,
+    //   );
+    // }).toList();
 
     return Match(
       id: id,
@@ -73,7 +89,7 @@ class Match {
       maxPlayers: maxPlayers,
       description: description,
       organizerPhoneNumber: organizerPhoneNumber,
-      players: newPlayers,
+      players: [],
     );
   }
 }

@@ -1,4 +1,7 @@
+import 'package:five_on_four/features/matches/domain/index.dart';
 import 'package:five_on_four/features/matches/domain/models/player.dart';
+import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
+import 'package:five_on_four/navigation/extensions.dart';
 import 'package:five_on_four/widgets/app_bar_popup_menu/app_bar_popup_menu.dart';
 import 'package:five_on_four/widgets/text_with_icon.dart';
 import 'package:flutter/material.dart';
@@ -6,10 +9,15 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 class MatchScreen extends StatelessWidget {
-  const MatchScreen({Key? key}) : super(key: key);
+  MatchScreen({Key? key}) : super(key: key);
+
+  final MatchesController _matchesController = MatchesController();
 
   @override
   Widget build(BuildContext context) {
+// TODO this all might need to be turned into a stateful widget
+// and then just create
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("View match"),
@@ -104,12 +112,13 @@ class MatchScreen extends StatelessWidget {
                     icon: Icons.people,
                     textStyle: Theme.of(context).textTheme.labelLarge,
                   ),
-                  for (Player player in mockPlayers)
-                    Row(
-                      children: <Widget>[
-                        Text(player.nickname),
-                      ],
-                    ),
+                  // TODO here rendered players
+                  // for (Player player in mockPlayers)
+                  //   Row(
+                  //     children: <Widget>[
+                  //       Text(player.nickname),
+                  //     ],
+                  //   ),
                 ],
               )
             ],
@@ -117,5 +126,21 @@ class MatchScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<Match?> _handleLoadMatch(BuildContext context) async {
+    // TODO later, erros should be just propagated from here
+    int? matchId = context.getRouteArgument<int>();
+
+    if (matchId == null) {
+      // in this case, we would also probably return some error later
+      // this would work with just returning null too
+      return Future.value(null);
+      // return null;
+    }
+
+    final match = await _matchesController.loadMatch(matchId);
+
+    return match;
   }
 }

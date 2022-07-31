@@ -1,3 +1,4 @@
+import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
 import 'package:five_on_four/navigation/app_router.dart';
 import 'package:five_on_four/navigation/routes.dart';
 import 'package:five_on_four/screens/home_screen.dart';
@@ -18,17 +19,26 @@ main() async {
 // - maybe i could make a controller for general services
 // there is another solution here, to say that it should be intiialized in a widget
 // https://stackoverflow.com/questions/55671692/how-do-i-setup-a-database-when-flutter-app-launches
-  await db.initialize();
+// TODO if keep this, this should jave a controller of its own i guess, not access it directly
+  await Db().initialize();
   // TODO what if this throws error to say that db is already open - just catch it?
 
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
+
+// TODO this should probably make it ll stateful widget
+// TODO or this should maybe go to home page?
+// TODO it should probably be in the home page, because here we dont need matches
+  final MatchesController _matchesController = MatchesController();
 
   @override
   Widget build(BuildContext context) {
+// TODO this should probably live in some init state or something
+    _matchesController.loadMatches();
+
     return MaterialApp(
       title: "Five On Four",
       theme: ThemeData(

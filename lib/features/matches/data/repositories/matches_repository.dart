@@ -4,5 +4,6 @@ import 'package:five_on_four/services/database/db.dart';
 
 abstract class MatchesRepository {
 // TODO eventually we might be passing arguments here to define which matches we
-  Future<List<Match>> getMatches();
+  Future<List<Match>> getAll();
+  Future<Match?> getOne(int matchId);
 }
