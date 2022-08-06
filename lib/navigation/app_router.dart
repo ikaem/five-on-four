@@ -21,7 +21,7 @@ class AppRouter {
   }
 
   static void toMatch(BuildContext context, int matchId) {
-    Navigator.of(context).pushNamed(Routes.matchViewRoute);
+    Navigator.of(context).pushNamed(Routes.matchViewRoute, arguments: matchId);
   }
 
   static void toMatchEdit(BuildContext context, String? matchId) {

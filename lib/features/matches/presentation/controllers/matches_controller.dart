@@ -51,9 +51,27 @@ class MatchesController {
     // _cacheMatches(matches);
   }
 
+  Future<void> createMatch(
+      String name,
+      String data,
+      String time,
+      String location,
+      // TODO this might be a string, since from input
+      int maxPlayers,
+      String description,
+      String organizerPhoneNumber,
+
+      // how do we provide list of these
+      // is there a way to have input controller store a list of values,
+      // or how do we create multiple controllers
+      // or how do we create inputs dynamically
+      List<int> invitedPlayerIds) async {}
+
   Future<Match?> loadMatch(int matchId) async {
     List<Match> cachedMatches = _matchesState.cachedMatches;
+
     final match = await _matchesService.getMatch(matchId);
+    devService.log("here in controller, ${match?.id}");
 
     if (match == null) {
 // TODO remove this match from cached matches

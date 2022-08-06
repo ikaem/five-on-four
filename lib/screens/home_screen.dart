@@ -198,7 +198,7 @@ class HomeScreen extends StatelessWidget {
         // https: //stackoverflow.com/a/55528778
         final matches = snapshot.data;
 
-        devService.log("passed");
+        // devService.log("passed");
 
         if (matches == null) {
           // SPIN SOMEHOW

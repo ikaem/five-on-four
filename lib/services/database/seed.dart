@@ -9,11 +9,18 @@ class Seed {
   static String getAllPlayers() => '''
     select 
       id,
-      nickname,
+      user_id,
       status,
       match_id
     from player p;
   ''';
+
+  static String getAllUsers() => '''
+    select 
+      id,
+      nickname
+    from user u,
+''';
 
   static String getAllMatches() => '''
     select 
@@ -58,6 +65,47 @@ class Seed {
       p.match_id
     order by 
       p.match_id;
+  ''';
+
+  static String insertUsers() => '''
+    insert into user 
+    (
+      nickname
+    )
+    values
+    (
+      'Zidane'
+    ),
+    (
+      'Pele'
+    ),
+    (
+      'Ronaldo'
+    ),
+    (
+      'Zico'
+    ),
+    (
+      'Totti'
+    ),
+    (
+      'Raul'
+    );
+  ''';
+
+  static String insertMatchPlayer(int matchId, int userId) => '''
+    insert into player 
+    (
+      user_id,
+      match_id, 
+      status
+    )
+    values 
+    (
+      $userId,
+      $matchId,
+      'joined',
+    );
   ''';
 
   static String insertMatchPlayers(int matchId) => '''

@@ -28,6 +28,13 @@ class Db {
     // possibly, maybe i can open db here
   }
 
+  Future<Database> get getConnection async {
+    await _makeSureDbIsInitialized();
+    final db = _getDatabaseOrThrow();
+
+    return db;
+  }
+
 //  TODO this could be potentually used in app itself to open database immeidately after db opens
   // Future<void> _open(String dbName) async {
   Future<void> initialize() async {
@@ -40,11 +47,14 @@ class Db {
       final docsPath = await getApplicationDocumentsDirectory();
       final dbPath = join(docsPath.path, DatabaseConstants.dbFileName);
 
+      await _dropDatabase(dbPath);
+
       // now we open the db
       // this would create db even if it does not exist on this path
       final db = await openDatabase(dbPath);
       _db = db;
 
+      await db.execute(DatabaseQueries.createUsersTable);
       await db.execute(DatabaseQueries.createMatchTable);
       await db.execute(DatabaseQueries.createPlayerTable);
 
@@ -71,6 +81,8 @@ class Db {
     }
   }
 
+// TODO here we would like to pass db to query on - for potentual transaction purposes
+// TODO this is not needed to expose anymore - it is all on the db
   Future<List<Map<String, Object?>>> queryRaw(String sql,
       [List<Object?>? arguments]) async {
     await _makeSureDbIsInitialized();
@@ -118,6 +130,12 @@ class Db {
     return db;
   }
 
+  Future<void> _dropDatabase(String dbPath) async {
+    // db.execute(sql)
+
+    databaseFactory.deleteDatabase(dbPath);
+  }
+
   // TODO only for use in dev
   Future<void> _seedData(Database db) async {
     final allMatchesBeforeDelete = await db.rawQuery(Seed.getAllMatches());
@@ -140,16 +158,24 @@ class Db {
 // TODO transaction should commit automatically if no errors
     await db.transaction((trx) async {
       // TODO check to make sure that this actually returns just one instead of multiple ids
-      final matchIdsRows = await trx.rawInsert(Seed.insertMatches());
+      await trx.rawInsert(Seed.insertMatches());
+      await trx.rawInsert(Seed.insertUsers());
 
       // print("passed creating matches, $matchIdsRows");
       final insertedMatchesRows = await trx.rawQuery(Seed.getAllMatches());
+      final insertedUsersRows = await trx.rawQuery(Seed.getAllUsers());
 
+      final batch = trx.batch();
       // print("added matches - $insertedMatchesRows");
 
+// for every match, create as many players as we have users
       for (var matchRow in insertedMatchesRows) {
+        final matchId = matchRow["id"] as int;
         // print("this is match row: $matchRow");
-        await trx.rawInsert(Seed.insertMatchPlayers(matchRow["id"] as int));
+        // await trx.rawInsert(Seed.insertMatchPlayers(matchRow["id"] as int));
+
+        // now need to loop over users, so can create a player out of each user
+
       }
     });
   }

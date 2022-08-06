@@ -1,6 +1,14 @@
 import 'package:five_on_four/features/matches/data/repositories/database/queries.dart';
 
 class DatabaseQueries {
+  static const createUsersTable = '''
+  CREATE TABLE "user" (
+    "id"	INTEGER NOT NULL UNIQUE,
+    "nickname"	TEXT NOT NULL,
+    PRIMARY KEY("id" AUTOINCREMENT)
+  );
+  ''';
+
   static const createMatchTable = '''
   CREATE TABLE IF NOT EXISTS "match" (
     "id"	INTEGER NOT NULL,
@@ -18,10 +26,11 @@ class DatabaseQueries {
   static const createPlayerTable = '''
   CREATE TABLE IF NOT EXISTS "player" (
     "id"	INTEGER NOT NULL,
-    "nickname"	TEXT NOT NULL,
+    "user_id"	INTEGER NOT NULL,
     "match_id"	INTEGER NOT NULL,
     "status"	TEXT NOT NULL,
     FOREIGN KEY("match_id") REFERENCES "match"("id") ON DELETE CASCADE,
+    FOREIGN KEY("user_id") REFERENCES "user"("id") ON DELETE CASCADE,
     PRIMARY KEY("id" AUTOINCREMENT)
   );
   ''';

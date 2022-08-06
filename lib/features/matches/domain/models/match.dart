@@ -51,6 +51,7 @@ class Match {
     //
     // players = row[MatchColumn.players] as List<String>;
     players = [];
+    // devService.log("test");
 
     // devService.log("players: ${row[MatchColumn.players]}");
   }

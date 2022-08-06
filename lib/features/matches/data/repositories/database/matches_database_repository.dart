@@ -1,9 +1,13 @@
 import 'package:five_on_four/features/matches/data/repositories/database/constants.dart';
+import 'package:five_on_four/features/matches/data/repositories/database/mutations.dart';
 import 'package:five_on_four/features/matches/data/repositories/database/queries.dart';
 import 'package:five_on_four/features/matches/data/repositories/database/types.dart';
 import 'package:five_on_four/features/matches/data/repositories/matches_repository.dart';
+import 'package:five_on_four/features/matches/data/repositories/types.dart';
 import 'package:five_on_four/features/matches/domain/models/match.dart';
 import 'package:five_on_four/features/matches/domain/models/player.dart';
+import 'package:five_on_four/features/matches/index.dart';
+import 'package:five_on_four/features/players/data/repositories/database/mutations.dart';
 import 'package:five_on_four/services/database/db.dart';
 import 'package:five_on_four/services/dev/dev_service.dart';
 
@@ -15,6 +19,55 @@ class MatchesDatabaseRepository implements MatchesRepository {
   // https://blog.logrocket.com/implementing-repository-pattern-flutter/
   final Db _db;
   MatchesDatabaseRepository(this._db);
+
+  // TODO test
+  @override
+  Future<int> insertOne(InsertMatchArgs args) async {
+    // TODO this sould actuaqlly accept databse, so it can query on it - so each functzion should accept database
+    final dbConnection = await _db.getConnection;
+
+    final matchId = await dbConnection.transaction((txn) async {
+      final matchId = await txn.rawInsert(MatchesMutations.insertMatch(), [
+        args.date,
+        args.time,
+        args.name,
+        args.location,
+        args.maxPlayers,
+        args.description,
+        args.organizerPhoneNumber
+      ]);
+
+// i could use transaction inside the loop, but that would mean mutliple statemenrt and pinging db
+// with batch, we just do one ping of db
+// unless we want the result - then even in batch there will be multiple resuilts
+      final batch = txn.batch();
+
+// player id will be hardcoded for now
+      for (int playerId in args.invitedPlayerIds) {
+        batch.rawInsert(PlayersMutations.insertPlayer(), [
+          "random player nickname -> $playerId",
+          matchId,
+          PlayerMatchStatus.invited
+        ]);
+      }
+      // TODO here we will actually insert multiple players
+      // question is how to insert multiple data with same argument
+
+// commit will happen only if transaction succeeds here
+      await batch.commit();
+
+      return matchId;
+    });
+
+    // TODO will need to also insert mutliple rows for players
+    // so maybe batch would do it?
+    // or, i could actually generate query based on how many arguments we have
+    // thisng is, loops actually generate values here
+
+    // TODO all of these should maybe throw errors of some specific kind
+
+    return matchId;
+  }
 
   @override
   Future<List<Match>> getAll() async {
@@ -42,6 +95,8 @@ class MatchesDatabaseRepository implements MatchesRepository {
     final matchRows =
         await _db.queryRaw(MatchesQueries.getOneMatchWithPlayers(), [matchId]);
 
+    // devService.log("here is match rows: $matchRows");
+
     final match = transformMatchRowsToMatch(matchRows);
 
     // TODO this could have the transform funciton potentially throw an error too
@@ -53,6 +108,8 @@ class MatchesDatabaseRepository implements MatchesRepository {
     // this way we could be more informative towards the user on what went wrong
     // TODO use errors later, and check if future builder has some error handler
 
+    print("this IS MATCH!!!, $match");
+
     return match;
   }
 }
@@ -63,11 +120,16 @@ Match? transformMatchRowsToMatch(List<Map<String, Object?>> matchRows) {
 
   Match match = Match.fromDbRowWithEmptyPlayers(matchRows[0]);
 
+  print("match 0: ${match.id}");
+
   for (Map<String, Object?> matchRow in matchRows) {
     Player player = Player.fromMatchDbRow(matchRow);
+
+    // devService.log("passed another match row");
     match.players.add(player);
   }
 
+  // devService.log("this is players: ${match.players}");
   return match;
 }
 
