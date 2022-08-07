@@ -61,7 +61,7 @@ class Db {
       print("passed creaing tables");
 
       // TODO here check if this is dev envrionment
-      // await _seedData(db);
+      await _seedData(db);
 
       // TODO we only want to seed this data if we are in development
       // TODO how to check if we are in development
@@ -176,7 +176,14 @@ class Db {
 
         // now need to loop over users, so can create a player out of each user
 
+        for (var userRow in insertedUsersRows) {
+          final userId = userRow["id"] as int;
+
+          batch.rawInsert(Seed.insertMatchPlayer(matchId, userId));
+        }
       }
+
+      await batch.commit();
     });
   }
 

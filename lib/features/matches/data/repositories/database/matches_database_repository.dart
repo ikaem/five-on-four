@@ -20,6 +20,13 @@ class MatchesDatabaseRepository implements MatchesRepository {
   final Db _db;
   MatchesDatabaseRepository(this._db);
 
+  // TODO this is test only - it should be moved to user feature
+  searchUsers() async {
+    final dbConnection = await _db.getConnection;
+
+    // final usersRows = await dbConnection.query("user", )
+  }
+
   // TODO test
   @override
   Future<int> insertOne(InsertMatchArgs args) async {
@@ -92,12 +99,17 @@ class MatchesDatabaseRepository implements MatchesRepository {
 
   @override
   Future<Match?> getOne(int matchId) async {
+    devService.log("in the repo query: $matchId");
     final matchRows =
         await _db.queryRaw(MatchesQueries.getOneMatchWithPlayers(), [matchId]);
+
+    // devService.log(matchRows);
 
     // devService.log("here is match rows: $matchRows");
 
     final match = transformMatchRowsToMatch(matchRows);
+
+    devService.log("match: $match");
 
     // TODO this could have the transform funciton potentially throw an error too
     // TODO and then we would njto have to return conditionaly
@@ -119,10 +131,12 @@ Match? transformMatchRowsToMatch(List<Map<String, Object?>> matchRows) {
   if (matchRows.isEmpty) return null;
 
   Match match = Match.fromDbRowWithEmptyPlayers(matchRows[0]);
+  devService.log("pased: match - $match");
 
-  print("match 0: ${match.id}");
+  // print("match 0: ${match.id}");
 
   for (Map<String, Object?> matchRow in matchRows) {
+    devService.log("in the loop - $matchRow");
     Player player = Player.fromMatchDbRow(matchRow);
 
     // devService.log("passed another match row");

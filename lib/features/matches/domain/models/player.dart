@@ -1,6 +1,7 @@
 // TODO player will effectively be an app user's membership on a match
 import 'dart:convert';
 
+import 'package:five_on_four/services/dev/dev_service.dart';
 import 'package:flutter/cupertino.dart';
 
 // tod oTHIS NEEDS TO MOVE TO ITS OWN FEATURE
@@ -21,9 +22,11 @@ class Player {
 
   // TODO test
   Player.fromMatchDbRow(Map<String, Object?> row) {
+    // devService.log(row);
     // create constants for these?
     id = row["player_id"] as int;
-    nickname = row["player_nickname"] as String;
+    // nickname = row["player_nickname"] as String;
+    nickname = row["nickname"] as String;
     matchStatus = row["player_status"] as String;
   }
 

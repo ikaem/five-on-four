@@ -1,6 +1,8 @@
 import 'package:five_on_four/features/matches/domain/index.dart';
 import 'package:five_on_four/features/matches/domain/models/player.dart';
 import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
+import 'package:five_on_four/features/users/doman/models/user.dart';
+import 'package:five_on_four/features/users/presentation/controllers/users_controller.dart';
 import 'package:five_on_four/navigation/extensions.dart';
 import 'package:five_on_four/services/dev/dev_service.dart';
 import 'package:five_on_four/widgets/app_bar_popup_menu/app_bar_popup_menu.dart';
@@ -11,10 +13,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
-class MatchScreen extends StatelessWidget {
+class MatchScreen extends StatefulWidget {
   MatchScreen({Key? key}) : super(key: key);
 
+  @override
+  State<MatchScreen> createState() => _MatchScreenState();
+}
+
+class _MatchScreenState extends State<MatchScreen> {
+  List<User> _users = [];
+
   final MatchesController _matchesController = MatchesController();
+
+  final UsersController _usersController = UsersController();
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +66,7 @@ class MatchScreen extends StatelessWidget {
   }
 
   Padding _renderLoadedMatchData(BuildContext context, Match match) {
-    devService.log("${match.players}");
+    // devService.log("${match.players}");
     // devService.log(match); --> this throws error
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -179,7 +190,18 @@ class MatchScreen extends StatelessWidget {
       return match;
     } catch (e) {
       // devService.log(e);
+      // TODO i would not want to handle stuff here - i there is error, should it be handled in the controller isntead
+      devService.log(e);
       return null;
     }
   }
+
+  // TODO test
+  // Future<List<User>> _handleSearchUsersByNickname(String nickname) async {
+  //   try {
+  //     final users = await _usersController.searchUsersByNickname(nickname);
+  //   } catch (e) {
+  //     devService.log("this is errror: $e");
+  //   }
+  // }
 }

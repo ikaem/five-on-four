@@ -19,7 +19,7 @@ class Seed {
     select 
       id,
       nickname
-    from user u,
+    from user u;
 ''';
 
   static String getAllMatches() => '''
@@ -45,11 +45,13 @@ class Seed {
       m.description,
       m.phone_number,
       p.id,
-      p.nickname,
+      p.user_id as "player_user_id",
       p.status,
-      p.match_id as "player_match_id"
+      p.match_id as "player_match_id",
+	    u.nickname
     from "match" m 
     left join player p on p.match_id = m.id 
+	left join user u on u.id = p.user_id
     group by 
       m.id,
       m."date",
@@ -60,7 +62,7 @@ class Seed {
       m.description,
       m.phone_number,
       p.id,
-      p.nickname,
+      p.user_id,
       p.status,
       p.match_id
     order by 
@@ -104,7 +106,7 @@ class Seed {
     (
       $userId,
       $matchId,
-      'joined',
+      'joined'
     );
   ''';
 
