@@ -1,4 +1,6 @@
 // TODO temp stateless widget
+import 'package:five_on_four/features/users/doman/models/user.dart';
+import 'package:five_on_four/features/users/presentation/controllers/users_controller.dart';
 import 'package:five_on_four/services/dev/dev_service.dart';
 import 'package:five_on_four/widgets/app_bar_popup_menu/app_bar_popup_menu.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +14,52 @@ class MatchEditScreen extends StatefulWidget {
   State<MatchEditScreen> createState() => _MatchEditScreenState();
 }
 
+// TODO test
+// class InvitedUserController {
+//   User? user;
+
+// }
+
 class _MatchEditScreenState extends State<MatchEditScreen> {
+// TODO another test
+  List<User?> invitedUsers = [];
+
+  // TODO test
+  List<User> _matchingUsersForInvite = [];
+
+  UsersController _usersController = UsersController();
+
   List<TextEditingController> _invitedPlayersControllers = [];
   List<TextField> _invitedPlayerTextFields = [];
 
   TextEditingController _testAutocompleteController = TextEditingController();
+
+  // TODO test
+  TextEditingController _testControllerForOnChangedInput =
+      TextEditingController();
+
+  @override
+  void initState() {
+    // _testControllerForOnChangedInput.addListener(() async {
+    //   // devService.log(_testControllerForOnChangedInput.text);
+
+    //   await Future.delayed(Duration(milliseconds: 500));
+
+    //   final input = _testControllerForOnChangedInput.text;
+
+    //   final users = await _usersController.searchUsersByNickname(input);
+
+    //   // devService.log("this is users: $users");
+
+    //   // devService.log("this is lenght: ${users.length}");
+
+    //   for (var user in users) {
+    //     // devService.log("user name: ${user.nickname}");
+    //   }
+    // });
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -26,11 +69,15 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
       controller.dispose();
     }
 
+    _testControllerForOnChangedInput.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    devService
+        .log("this is invited users: ${invitedUsers.map((u) => u?.nickname)}");
     return Scaffold(
       appBar: AppBar(
         // TODO title will also be dynamic, based on whether we edit or create new item
@@ -133,6 +180,16 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
             const SizedBox(
               height: 30,
             ),
+
+// TODO test from here
+
+            // for (final user in invitedUsers)
+            //   _renderSingleUserAutocomplete(user),
+
+// TODO test to here
+
+            // _renderOnChangedValueAutocomplete(),
+            _renderTestInputFetchOnType(),
             _renderInvitedPlayerAutocomplete(),
             Column(
               key: const Key("invite-players"),
@@ -151,16 +208,24 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
 
                     IconButton(
                       onPressed: () {
-                        devService.log("creating new text field");
-                        _addInvitedPlayerTextController();
+                        // devService.log("creating new text field");
+                        // _addInvitedPlayerTextController();
+                        _addInvitedPlayerAutocomplete();
                       },
                       icon: Icon(Icons.add_circle_rounded),
                     )
                   ],
                 ),
 
-                for (final controller in _invitedPlayersControllers)
-                  _renderInvitedPlayerTextField(controller)
+/*                 for (final controller in _invitedPlayersControllers)
+                  _renderInvitedPlayerTextField(controller) */
+
+                for (final user in invitedUsers)
+                  _renderSingleUserAutocomplete(user),
+
+                SizedBox(
+                  height: 200,
+                )
 
                 // _invitedPlayerTextFields.map((f) {
                 //   return f;
@@ -202,6 +267,120 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
     );
   }
 
+  // void _doSomethingOnEachInputType () {
+  //   print
+  // }
+
+  Widget _renderTestInputFetchOnType() {
+    return Column(
+      key: const Key("fetch-on-type-test"),
+      children: <Widget>[
+        Row(
+          children: const <Widget>[
+            Icon(Icons.construction),
+            SizedBox(
+              width: 10,
+            ),
+            Text("Test fetch")
+          ],
+        ),
+        TextField(
+          // onChanged: (value) {
+          //   devService.log(value);
+          // },
+          controller: _testControllerForOnChangedInput,
+        ),
+      ],
+    );
+  }
+
+  Widget _renderOnChangedValueAutocomplete() {
+// TODO test
+    List<User> testUsers = [];
+
+    final autocomplete = Autocomplete<User>(
+      optionsBuilder: (TextEditingValue textEditingValue) async {
+        // devService.log("this is test users in options builder: $testUsers");
+        // devService.log(
+        //     "this is text editing value in options builder: $textEditingValue");
+
+        if (textEditingValue.text.isEmpty) {
+          return [];
+        }
+
+        final users =
+            await _usersController.searchUsersByNickname(textEditingValue.text);
+        return users;
+
+        // return testUsers;
+      },
+      displayStringForOption: (option) {
+        return option.nickname;
+      },
+      fieldViewBuilder: (
+        BuildContext context,
+        TextEditingController fieldTextEditingController,
+        FocusNode fieldFocusNode,
+        VoidCallback onFieldSubmitted,
+      ) {
+        // devService.log("this is focus: ${fieldFocusNode.hasFocus}");
+
+        // fieldTextEditingController.addListener(() async {
+        //   // devService.log(fieldTextEditingController.text);
+
+        //   // await Future.delayed(Duration(milliseconds: 500));
+
+        //   final input = fieldTextEditingController.text;
+
+        //   if (input.isEmpty) {
+        //     testUsers = [];
+        //     // devService.log("this is set users: $testUsers");
+        //     return;
+        //   }
+
+        //   final users = await _usersController.searchUsersByNickname(input);
+
+        //   // devService.log("this is users: $users");
+
+        //   // devService.log("this is lenght: ${users.length}");
+
+        //   // for (var user in users) {
+        //   //   devService.log("user name: ${user.nickname}");
+        //   // }
+
+        //   // setState(() {
+        //   //   _matchingUsersForInvite = users;
+        //   // });
+
+        //   // devService.log("this is set users: $_matchingUsersForInvite");
+        //   testUsers = users;
+        //   // devService.log("this is set users: $testUsers");
+        // });
+
+        return Row(
+          children: [
+            Icon(Icons.construction),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: TextField(
+                controller: fieldTextEditingController,
+                focusNode: fieldFocusNode,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+      onSelected: (selection) {
+        // devService.log("selection: ${selection.nickname}");
+      },
+    );
+
+    return autocomplete;
+  }
+
   Widget _renderInvitedPlayerAutocomplete() {
     final autocomplete = Autocomplete<Country>(
       optionsBuilder: (TextEditingValue textEditingValue) {
@@ -211,7 +390,7 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
           TextEditingController fieldTextEditingController,
           FocusNode fieldFocusNode,
           VoidCallback onFieldSubmitted) {
-        devService.log("this is focus: ${fieldFocusNode.hasFocus}");
+        // devService.log("this is focus: ${fieldFocusNode.hasFocus}");
 
         return TextField(
           controller: fieldTextEditingController,
@@ -220,7 +399,7 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
         );
       },
       onSelected: (selection) {
-        devService.log("selection: ${selection.name}");
+        // devService.log("selection: ${selection.name}");
       },
       // optionsViewBuilder: (
       //   BuildContext context,
@@ -280,8 +459,8 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
       _invitedPlayersControllers.add(controller);
     });
 
-    devService.log("all controllers: $_invitedPlayersControllers");
-    devService.log("all fields: $_invitedPlayerTextFields");
+    // devService.log("all controllers: $_invitedPlayersControllers");
+    // devService.log("all fields: $_invitedPlayerTextFields");
   }
 
 // TODO test
@@ -303,6 +482,129 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
       _invitedPlayersControllers = controllers;
       //
     });
+  }
+
+  /////////////// TODO from here function to render single autocomplete
+  ///
+
+  void _addInvitedPlayerAutocomplete() {
+    // check if any of the users in the array is null
+
+    final nullUser = invitedUsers.any((element) => element == null);
+
+    if (nullUser == true) {
+      return;
+    }
+
+    // now we know that no users are null, so we can add a new element
+    final newUsers = [...invitedUsers, null];
+
+    setState(() {
+      invitedUsers = newUsers;
+    });
+  }
+
+  void _removeInvitedUserAutocomplete(
+      User? user, TextEditingController autocompleteController) {
+    // final users = invitedUsers.where((element) => element != user).toList();
+    final users = invitedUsers.where((element) {
+      return element != user;
+    }).toList();
+
+    devService.log(
+        "printing elements remaining after filtering out removed user: ${users.map((u) => u?.nickname)}");
+
+    // autocompleteController.dispose();
+    setState(() {
+      invitedUsers = users;
+    });
+  }
+
+  Widget _renderSingleUserAutocomplete(User? user) {
+    devService.log("this is user in render single user: ${user?.nickname}");
+    final autocomplete = Autocomplete<User>(
+      key: Key(user?.nickname ?? "null-user"),
+      initialValue: TextEditingValue(text: user?.nickname ?? ""),
+      optionsBuilder: (TextEditingValue textEditingValue) async {
+        if (textEditingValue.text.isEmpty) {
+          return [];
+        }
+
+        final users =
+            await _usersController.searchUsersByNickname(textEditingValue.text);
+        return users;
+      },
+      displayStringForOption: (option) {
+        return option.nickname;
+      },
+      fieldViewBuilder: (
+        BuildContext context,
+        TextEditingController fieldTextEditingController,
+        FocusNode fieldFocusNode,
+        VoidCallback onFieldSubmitted,
+      ) {
+        devService
+            .log("this is controller: ${fieldTextEditingController.text}");
+
+        devService.log("this is hash: ${fieldTextEditingController.hashCode}");
+
+        // fieldTextEditingController.text = user?.nickname ?? "";
+        // fieldTextEditingController.value = TextEditingValue()
+
+        return Row(
+          children: [
+            Icon(Icons.cloud_circle),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: TextField(
+                controller: fieldTextEditingController,
+                focusNode: fieldFocusNode,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                decoration: InputDecoration(
+                    suffix: IconButton(
+                  icon: const Icon(Icons.remove_circle),
+                  onPressed: () {
+                    _removeInvitedUserAutocomplete(
+                        user, fieldTextEditingController);
+                  },
+                )),
+              ),
+            ),
+          ],
+        );
+      },
+      onSelected: (selection) {
+        // devService.log("selection: ${selection.nickname}");
+
+        final users = invitedUsers;
+
+        User? foundUser = users.firstWhere((element) => element == user);
+
+        devService.log("this is selection: $selection");
+        devService.log("this is found user: $foundUser");
+        devService.log("are they same?: ${foundUser == user}");
+
+        // now i have to set user to this
+
+        foundUser = selection;
+
+        final indexOfUser = users.indexWhere((element) => element == user);
+
+        users[indexOfUser] = selection;
+
+        devService.log("index of current user in users: $indexOfUser");
+
+        devService.log("users after user adjust: $users");
+
+        setState(() {
+          invitedUsers = users;
+        });
+      },
+    );
+
+    return autocomplete;
   }
 }
 

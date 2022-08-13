@@ -2,6 +2,7 @@ import 'package:five_on_four/features/users/application/services/users_service.d
 import 'package:five_on_four/features/users/data/repositories/users_repository_provider.dart';
 import 'package:five_on_four/features/users/doman/models/user.dart';
 import 'package:five_on_four/services/database/db.dart';
+import 'package:five_on_four/services/dev/dev_service.dart';
 
 // TODO could we make a class singleton to extend from
 
@@ -19,6 +20,8 @@ class UsersController {
   UsersController._internal();
 
   Future<List<User>> searchUsersByNickname(String nickname) async {
+    // devService.log("logging in the controller: $nickname");
+
     final users = await _usersService.searchUsers(nickname);
 
     return users;
