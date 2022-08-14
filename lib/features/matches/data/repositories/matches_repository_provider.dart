@@ -2,6 +2,7 @@ import 'package:five_on_four/features/matches/data/repositories/database/matches
 import 'package:five_on_four/features/matches/data/repositories/matches_repository.dart';
 import 'package:five_on_four/features/matches/data/repositories/types.dart';
 import 'package:five_on_four/features/matches/domain/models/match.dart';
+import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
 import 'package:five_on_four/services/database/db.dart' show Db;
 import 'package:five_on_four/services/dev/dev_service.dart';
 

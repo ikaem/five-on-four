@@ -25,8 +25,8 @@ class Seed {
   static String getAllMatches() => '''
     select 
       m.id,
-      m."date",
-      m."time",
+      m."datetime",
+      m."duration",
       m."name",
       m."location",
       m.max_players,
@@ -37,8 +37,8 @@ class Seed {
   static String getAllMatchesWithPlayers() => '''
     select 
       m.id,
-      m."date",
-      m."time",
+      m."datetime",
+      m."duration",
       m."name",
       m."location",
       m.max_players,
@@ -54,8 +54,8 @@ class Seed {
 	left join user u on u.id = p.user_id
     group by 
       m.id,
-      m."date",
-      m."time",
+      m."datetime",
+      m."duration",
       m."name",
       m."location",
       m.max_players,
@@ -153,8 +153,8 @@ class Seed {
   static String insertMatches() => '''
     insert into "match" 
     (
-      "date",
-      "time",
+      "datetime",
+      "duration",
       "name",
       "location",
       max_players,
@@ -163,8 +163,8 @@ class Seed {
     )
     values
     (
-      '7/1/2022',
-      '12:18 AM',
+      '2022-08-09T05:59:00.000',
+      3 600 000,
       'Random match name',
       'Lacabamba',
       12,
@@ -172,8 +172,8 @@ class Seed {
       '+123456789'
     ),
     (
-      '7/1/2022',
-      '12:18 AM',
+      '2022-08-09T05:59:00.000',
+      3 600 000,
       'Random match name',
       'Lacabamba',
       12,
@@ -181,8 +181,8 @@ class Seed {
       '+123456789'
     ),
     (
-      '7/1/2022',
-      '12:18 AM',
+      '2022-08-09T05:59:00.000',
+      3 600 000,
       'Random match name',
       'Lacabamba',
       12,
@@ -190,8 +190,8 @@ class Seed {
       '+123456789'
     ),
     (
-      '7/1/2022',
-      '12:18 AM',
+      '2022-08-09T05:59:00.000',
+      3 600 000,
       'Random match name',
       'Lacabamba',
       12,
@@ -199,8 +199,8 @@ class Seed {
       '+123456789'
     ),
     (
-      '7/1/2022',
-      '12:18 AM',
+      '2022-08-09T05:59:00.000',
+      3 600 000,
       'Random match name',
       'Lacabamba',
       12,
@@ -208,8 +208,8 @@ class Seed {
       '+123456789'
     ),
     (
-      '7/1/2022',
-      '12:18 AM',
+      '2022-08-09T05:59:00.000',
+      3 600 000,
       'Random match name',
       'Lacabamba',
       12,
@@ -217,8 +217,8 @@ class Seed {
       '+123456789'
     ),
     (
-      '7/1/2022',
-      '12:18 AM',
+      '2022-08-09T05:59:00.000',
+      3 600 000,
       'Random match name',
       'Lacabamba',
       12,
@@ -226,8 +226,8 @@ class Seed {
       '+123456789'
     ),
     (
-      '7/1/2022',
-      '12:18 AM',
+      '2022-08-09T05:59:00.000',
+      3 600 000,
       'Random match name',
       'Lacabamba',
       12,
@@ -235,8 +235,8 @@ class Seed {
       '+123456789'
     ),
     (
-      '7/1/2022',
-      '12:18 AM',
+      '2022-08-09T05:59:00.000',
+      3 600 000,
       'Random match name',
       'Lacabamba',
       12,

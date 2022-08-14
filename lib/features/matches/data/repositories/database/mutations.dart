@@ -2,8 +2,8 @@ class MatchesMutations {
   static String insertMatch() => '''
   insert into "match" 
     (
-      "date",
-      "time",
+      "datetime",
+      "duration",
       "name",
       "location",
       max_players,

@@ -1,6 +1,7 @@
 import 'package:five_on_four/features/matches/data/repositories/matches_repository.dart';
 import 'package:five_on_four/features/matches/data/repositories/types.dart';
 import 'package:five_on_four/features/matches/domain/index.dart';
+import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
 import 'package:five_on_four/services/dev/dev_service.dart';
 
 class MatchesService {

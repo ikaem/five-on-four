@@ -12,8 +12,8 @@ class DatabaseQueries {
   static const createMatchTable = '''
   CREATE TABLE IF NOT EXISTS "match" (
     "id"	INTEGER NOT NULL,
-    "date"	TEXT NOT NULL,
-    "time"	TEXT NOT NULL,
+    "datetime"	TEXT NOT NULL,
+    "duration"	INTEGER NOT NULL,
     "name"	TEXT NOT NULL,
     "location"	TEXT NOT NULL,
     "max_players"	INTEGER NOT NULL,

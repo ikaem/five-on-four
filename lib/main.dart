@@ -5,6 +5,7 @@ import 'package:five_on_four/screens/home_screen.dart';
 import 'package:five_on_four/services/database/db.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 main() async {
   // TODO what does this do exactly
@@ -44,6 +45,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
+      localizationsDelegates: [
+        GlobalWidgetsLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        // GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [Locale('en', 'US')], //, Locale('pt', 'BR')],
       routes: AppRouter.generateRoutes(context),
       // TODO this is not needed
       // initialRoute: homeRoute,

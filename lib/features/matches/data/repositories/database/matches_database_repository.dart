@@ -7,6 +7,7 @@ import 'package:five_on_four/features/matches/data/repositories/types.dart';
 import 'package:five_on_four/features/matches/domain/models/match.dart';
 import 'package:five_on_four/features/matches/domain/models/player.dart';
 import 'package:five_on_four/features/matches/index.dart';
+import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
 import 'package:five_on_four/features/players/data/repositories/database/mutations.dart';
 import 'package:five_on_four/services/database/db.dart';
 import 'package:five_on_four/services/dev/dev_service.dart';
@@ -35,13 +36,13 @@ class MatchesDatabaseRepository implements MatchesRepository {
 
     final matchId = await dbConnection.transaction((txn) async {
       final matchId = await txn.rawInsert(MatchesMutations.insertMatch(), [
-        args.date,
-        args.time,
-        args.name,
-        args.location,
-        args.maxPlayers,
-        args.description,
-        args.organizerPhoneNumber
+        args.matchDateTime,
+        args.matchDuration,
+        args.matchName,
+        args.matchLocation,
+        args.matchMaxPlayers,
+        args.matchDescription,
+        args.matchOrganizerPhoneNumber
       ]);
 
 // i could use transaction inside the loop, but that would mean mutliple statemenrt and pinging db
@@ -50,8 +51,9 @@ class MatchesDatabaseRepository implements MatchesRepository {
       final batch = txn.batch();
 
 // player id will be hardcoded for now
-      for (int playerId in args.invitedPlayerIds) {
+      for (int playerId in args.matchInvitedUserIds) {
         batch.rawInsert(PlayersMutations.insertPlayer(), [
+          // TODO later remove having nicknames here
           "random player nickname -> $playerId",
           matchId,
           PlayerMatchStatus.invited

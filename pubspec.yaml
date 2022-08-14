@@ -33,7 +33,11 @@ dependencies:
   sqflite: ^2.0.3
   path_provider: ^2.0.11
   path:
-  flutter_datetime_picker: ^1.5.1
+  date_time_picker: ^2.1.0
+  flutter_localizations:
+    sdk: flutter
+  localization: ^2.1.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

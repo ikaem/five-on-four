@@ -4,6 +4,7 @@ import 'package:five_on_four/features/matches/application/services/matches_servi
 import 'package:five_on_four/features/matches/data/repositories/matches_repository_provider.dart';
 import 'package:five_on_four/features/matches/domain/index.dart';
 import 'package:five_on_four/features/matches/presentation/states/matches_state.dart';
+import 'package:five_on_four/features/users/doman/models/user.dart';
 import 'package:five_on_four/services/database/db.dart';
 import 'package:five_on_four/services/dev/dev_service.dart';
 
@@ -100,5 +101,93 @@ class MatchesController {
     return match;
   }
 
+  // TODO test
+  // TODO this function should probably return match id - will need to figure out how to get that from transaction and batch
+  // should not be a problem, becuase inserting match will be a regular transaction - this can return value no problem
+  // while inserting players will be a batch function
+
+  Future<int> createMatch({
+    required String matchName,
+    required String matchDateTime,
+    required String matchDuration,
+    required String matchLocation,
+    required String matchMaxPlayers,
+    required String matchDescription,
+    required String matchOrganizerPhoneNumber,
+    required List<User> matchInvitedUsers,
+  }) async {
+    final insertMatchArgs = generateInsertMatchArgs(
+      matchName: matchName,
+      matchDateTime: matchDateTime,
+      matchDuration: matchDuration,
+      matchLocation: matchLocation,
+      matchMaxPlayers: matchMaxPlayers,
+      matchDescription: matchDescription,
+      matchOrganizerPhoneNumber: matchOrganizerPhoneNumber,
+      matchInvitedUsers: matchInvitedUsers,
+    );
+
+    // and now call service
+  }
+
   Stream<List<Match>> get matchesStream => _matchesState.matchesStream;
+}
+
+// this is test - this model, org args, should live somewhere else
+class InsertMatchArgs {
+  String matchName;
+  // TODO these possibly should be date time and not string
+  String matchDateTime;
+  int matchDuration;
+  String matchLocation;
+  int matchMaxPlayers;
+  String matchDescription;
+  String matchOrganizerPhoneNumber;
+  List<int> matchInvitedUserIds;
+
+  InsertMatchArgs(
+      this.matchName,
+      this.matchDateTime,
+      this.matchDuration,
+      this.matchLocation,
+      this.matchMaxPlayers,
+      this.matchDescription,
+      this.matchOrganizerPhoneNumber,
+      this.matchInvitedUserIds);
+}
+
+InsertMatchArgs generateInsertMatchArgs({
+  required String matchName,
+  required String matchDateTime,
+  required String matchDuration,
+  required String matchLocation,
+  required String matchMaxPlayers,
+  required String matchDescription,
+  required String matchOrganizerPhoneNumber,
+  required List<User> matchInvitedUsers,
+}) {
+  final normalizedName = matchName.trim();
+  // TODO this default value should probably be offered to user as a default anyhow
+  final normalizedDateTime = DateTime.parse(matchDateTime).toIso8601String();
+  final duration = double.tryParse(matchDuration) ?? 1.0;
+  final normalizedDurationInMilliseconds = (duration * 60 * 60 * 1000).toInt();
+  final normalizedLocation = matchLocation.trim();
+  // same thing here - 12 should be a default option
+  final normalizedMaxPlayers = int.tryParse(matchMaxPlayers) ?? 12;
+  final normalizedDescription = matchDescription.trim();
+  final normalizedPhoneNumber = matchOrganizerPhoneNumber.trim();
+  final normalizedUserIds = matchInvitedUsers.map((u) => u.id).toList();
+
+  final matchArgs = InsertMatchArgs(
+    normalizedName,
+    normalizedDateTime,
+    normalizedDurationInMilliseconds,
+    normalizedLocation,
+    normalizedMaxPlayers,
+    normalizedDescription,
+    normalizedPhoneNumber,
+    normalizedUserIds,
+  );
+
+  return matchArgs;
 }
