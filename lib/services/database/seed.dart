@@ -164,7 +164,7 @@ class Seed {
     values
     (
       '2022-08-09T05:59:00.000',
-      3 600 000,
+      3600000,
       'Random match name',
       'Lacabamba',
       12,
@@ -173,7 +173,7 @@ class Seed {
     ),
     (
       '2022-08-09T05:59:00.000',
-      3 600 000,
+      3600000,
       'Random match name',
       'Lacabamba',
       12,
@@ -182,7 +182,7 @@ class Seed {
     ),
     (
       '2022-08-09T05:59:00.000',
-      3 600 000,
+      3600000,
       'Random match name',
       'Lacabamba',
       12,
@@ -191,7 +191,7 @@ class Seed {
     ),
     (
       '2022-08-09T05:59:00.000',
-      3 600 000,
+      3600000,
       'Random match name',
       'Lacabamba',
       12,
@@ -200,7 +200,7 @@ class Seed {
     ),
     (
       '2022-08-09T05:59:00.000',
-      3 600 000,
+      3600000,
       'Random match name',
       'Lacabamba',
       12,
@@ -209,7 +209,7 @@ class Seed {
     ),
     (
       '2022-08-09T05:59:00.000',
-      3 600 000,
+      3600000,
       'Random match name',
       'Lacabamba',
       12,
@@ -218,7 +218,7 @@ class Seed {
     ),
     (
       '2022-08-09T05:59:00.000',
-      3 600 000,
+      3600000,
       'Random match name',
       'Lacabamba',
       12,
@@ -227,7 +227,7 @@ class Seed {
     ),
     (
       '2022-08-09T05:59:00.000',
-      3 600 000,
+      3600000,
       'Random match name',
       'Lacabamba',
       12,
@@ -236,7 +236,7 @@ class Seed {
     ),
     (
       '2022-08-09T05:59:00.000',
-      3 600 000,
+      3600000,
       'Random match name',
       'Lacabamba',
       12,

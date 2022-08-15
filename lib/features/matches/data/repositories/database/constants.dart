@@ -1,8 +1,8 @@
 // TODO table name should probably be here as well, and not in the db service
 class MatchColumn {
   static String id = "id";
-  static String date = "date";
-  static String time = "time";
+  static String datetime = "datetime";
+  static String duration = "duration";
   static String name = "name";
   static String location = "location";
   static String maxPlayers = "max_players";

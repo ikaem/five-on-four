@@ -1,6 +1,8 @@
 import 'package:date_time_picker/date_time_picker.dart';
+import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
 import 'package:five_on_four/features/users/doman/models/user.dart';
 import 'package:five_on_four/features/users/presentation/controllers/users_controller.dart';
+import 'package:five_on_four/navigation/app_router.dart';
 import 'package:five_on_four/services/dev/dev_service.dart';
 import 'package:five_on_four/widgets/app_bar_popup_menu/app_bar_popup_menu.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +18,8 @@ class MatchEditScreen extends StatefulWidget {
 
 class _MatchEditScreenState extends State<MatchEditScreen> {
   List<User?> _invitedUsers = [];
-
   final _formKey = GlobalKey<FormState>();
+  final _matchesController = MatchesController();
 
   final TextEditingController _matchNameController = TextEditingController();
   final TextEditingController _dateTimeController =
@@ -73,6 +75,7 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
             child: Form(
           key: _formKey,
           child: Column(
+            // crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               TextFormField(
                 key: Key("form-input-match-name"),
@@ -112,7 +115,15 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
                 dateMask: 'd MMMM, yyyy - hh:mm a',
                 controller: _dateTimeController,
                 //initialValue: _initialValue,
-                firstDate: DateTime(2000),
+                // TODO
+                /* 
+                but this does not solve issue of time not being correct 
+                so this should be handled 
+                manually somehow
+                to create date now now if time before now
+                and it should be validated properyl in the controller maybe, or in the handler for create in UI
+                 */
+                firstDate: DateTime.now(),
                 lastDate: DateTime(2100),
                 //icon: Icon(Icons.event),
                 // dateLabelText: 'Date Time',
@@ -167,7 +178,9 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
                 height: 30,
               ),
               TextFormField(
+                key: Key("match-max-players"),
                 controller: _maxPlayersController,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   icon: Icon(Icons.numbers),
                 ),
@@ -234,6 +247,36 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
               const SizedBox(
                 height: 30,
               ),
+              // Checkbox(
+              //   value: true,
+              //   onChanged: (isChecked) {
+              //     devService.log("checkbox is checked: $isChecked");
+              //   },
+              // ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: Checkbox(
+                      value: true,
+                      onChanged: (isChecked) {
+                        devService.log("checkbox is checked: $isChecked");
+                      },
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 16,
+                  ),
+                  Text("Join match"),
+                ],
+              ),
+
+              const SizedBox(
+                height: 30,
+              ),
               Column(
                 key: const Key("invite-players"),
                 children: <Widget>[
@@ -293,7 +336,7 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
     );
   }
 
-  void _handleSubmitNewMatch() {
+  void _handleSubmitNewMatch() async {
     final state = _formKey.currentState;
     if (state == null) return;
 
@@ -302,6 +345,8 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
     final isFormValid = state.validate();
 
     if (isFormValid == false) return;
+
+    int? matchId;
 
     devService.log("Now we are creating new match");
 
@@ -326,9 +371,35 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
       matchMaxPlayers: $matchMaxPlayers,
       matchDescription: $matchDescription,
       matchOrganizerPhoneNumber: $matchOrganizerPhoneNumber,
+      invitedUsers: ${_invitedUsers.map((u) => u?.id)}
       ''';
 
     devService.log(messageForShow);
+
+// TODO where should error handling happen? - here or in the controller?
+
+    try {
+      matchId = await _matchesController.createMatch(
+        matchName: matchName,
+        matchDateTime: matchDateTime,
+        matchDuration: matchDuration,
+        matchLocation: matchLocation,
+        matchMaxPlayers: matchMaxPlayers,
+        matchDescription: matchDescription,
+        matchOrganizerPhoneNumber: matchOrganizerPhoneNumber,
+        matchInvitedUsers: invitedUsers,
+      );
+
+      // AppRouter.toMatch(context, matchId);
+      // routeToMatch(context, matchId);
+    } catch (e) {
+      devService.log("this is error: $e");
+    }
+
+    if (matchId == null) return;
+    // TODO return to this
+    // make app router class taht actually returns instance, and intiailize it before get to this async gaps, so cotnext is defined earlier
+    AppRouter.toMatch(context, matchId);
   }
 
   void _addInvitedPlayerAutocomplete() {
@@ -376,7 +447,23 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
 
         final users = await widget._usersController
             .searchUsersByNickname(textEditingValue.text);
-        return users;
+
+// TODO here should create a function to filter out any user that might already be added
+// TODO this is pretty naive, loop withing loop - should probably handle it better
+
+        final filteredUsers = users.where((userForInvite) {
+          // TODO this is loop in a loop - this will lag a lot when a lot of users
+          // so should probably solve this in future by passing a list of invited ids to the query, so sql can handle that with something like NOT ANY (LIST OF Ids)
+
+          final isUserAlreadyInvited = _invitedUsers
+              .any((invitedUser) => invitedUser?.id == userForInvite.id);
+
+          if (isUserAlreadyInvited) return false;
+
+          return true;
+        });
+
+        return filteredUsers;
       },
       displayStringForOption: (option) {
         return option.nickname;

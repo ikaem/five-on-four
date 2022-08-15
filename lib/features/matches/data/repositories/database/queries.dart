@@ -7,8 +7,8 @@ class MatchesQueries {
   static String getAllMatchesWithPlayers() => '''
     select 
       m.id,
-      m."date",
-      m."time",
+      m."datetime",
+      m."duration",
       m."name",
       m."location",
       m.max_players,
@@ -24,8 +24,8 @@ class MatchesQueries {
 	left join user u on u.id = p.user_id
     group by 
       m.id,
-      m."date",
-      m."time",
+      m."datetime",
+      m."duration",
       m."name",
       m."location",
       m.max_players,
@@ -42,8 +42,8 @@ class MatchesQueries {
   static String getOneMatchWithPlayers() => '''
   select 
     m.id,
-    m."date",
-    m."time",
+    m."datetime",
+    m."duration",
     m."name",
     m."location",
     m.max_players,
@@ -52,7 +52,8 @@ class MatchesQueries {
     p.id as "player_id",
     p.status as "player_status",
     p.match_id as "player_match_id",
-	  u.nickname as "nickname"
+	  u.nickname as "nickname",
+    u.id as "user_id"
   from "match" m 
   left join player p on p.match_id = m.id
   left join user u on u.id = p.user_id

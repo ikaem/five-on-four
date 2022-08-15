@@ -54,7 +54,7 @@ class MatchesDatabaseRepository implements MatchesRepository {
       for (int playerId in args.matchInvitedUserIds) {
         batch.rawInsert(PlayersMutations.insertPlayer(), [
           // TODO later remove having nicknames here
-          "random player nickname -> $playerId",
+          playerId,
           matchId,
           PlayerMatchStatus.invited
         ]);
@@ -105,6 +105,8 @@ class MatchesDatabaseRepository implements MatchesRepository {
     final matchRows =
         await _db.queryRaw(MatchesQueries.getOneMatchWithPlayers(), [matchId]);
 
+    devService.log("test match rows: ${matchRows}");
+
     // devService.log(matchRows);
 
     // devService.log("here is match rows: $matchRows");
@@ -131,6 +133,8 @@ class MatchesDatabaseRepository implements MatchesRepository {
 // TODO move to some util functions
 Match? transformMatchRowsToMatch(List<Map<String, Object?>> matchRows) {
   if (matchRows.isEmpty) return null;
+
+  devService.log("in transform: $matchRows");
 
   Match match = Match.fromDbRowWithEmptyPlayers(matchRows[0]);
   devService.log("pased: match - $match");

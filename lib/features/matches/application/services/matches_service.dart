@@ -40,6 +40,8 @@ class MatchesService {
 
     final matchId = await _matchesRepositoryProvider.insertOne(args);
 
+    devService.log("match id: $matchId");
+
     return matchId;
   }
 }

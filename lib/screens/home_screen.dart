@@ -118,9 +118,9 @@ class HomeScreen extends StatelessWidget {
                     MatchBrief(
                       match: Match(
                           id: 1,
-                          date: "20/08/2022",
+                          datetime: "20/08/2022",
+                          duration: 1,
                           name: "Test upcoming match",
-                          time: "18:30",
                           location: "Location",
                           maxPlayers: 12,
                           description: "QQuick Lorem Ipsum here",

@@ -94,11 +94,11 @@ class _MatchScreenState extends State<MatchScreen> {
                   textStyle: Theme.of(context).textTheme.labelLarge,
                 ),
                 TextWithIcon(
-                  text: match.date,
+                  text: match.datetime,
                   icon: Icons.calendar_month,
                 ),
                 TextWithIcon(
-                  text: match.time,
+                  text: match.datetime,
                   icon: Icons.access_time_outlined,
                 ),
                 TextWithIcon(

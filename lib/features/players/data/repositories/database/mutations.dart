@@ -2,7 +2,7 @@ class PlayersMutations {
   static String insertPlayer() => '''
   insert into "player" 
     (
-      "nickname",
+      "user_id",
       "match_id",
       "status"
     )

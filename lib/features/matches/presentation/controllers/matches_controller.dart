@@ -52,26 +52,27 @@ class MatchesController {
     // _cacheMatches(matches);
   }
 
-  Future<void> createMatch(
-      String name,
-      String data,
-      String time,
-      String location,
-      // TODO this might be a string, since from input
-      int maxPlayers,
-      String description,
-      String organizerPhoneNumber,
+  // Future<void> createMatch(
+  //     String name,
+  //     String data,
+  //     String time,
+  //     String location,
+  //     // TODO this might be a string, since from input
+  //     int maxPlayers,
+  //     String description,
+  //     String organizerPhoneNumber,
 
-      // how do we provide list of these
-      // is there a way to have input controller store a list of values,
-      // or how do we create multiple controllers
-      // or how do we create inputs dynamically
-      List<int> invitedPlayerIds) async {}
+  //     // how do we provide list of these
+  //     // is there a way to have input controller store a list of values,
+  //     // or how do we create multiple controllers
+  //     // or how do we create inputs dynamically
+  //     List<int> invitedPlayerIds) async {}
 
   Future<Match?> loadMatch(int matchId) async {
     List<Match> cachedMatches = _matchesState.cachedMatches;
 
     final match = await _matchesService.getMatch(matchId);
+
     devService.log("here in controller, ${match?.id}");
 
     if (match == null) {
@@ -114,7 +115,7 @@ class MatchesController {
     required String matchMaxPlayers,
     required String matchDescription,
     required String matchOrganizerPhoneNumber,
-    required List<User> matchInvitedUsers,
+    required List<User?> matchInvitedUsers,
   }) async {
     final insertMatchArgs = generateInsertMatchArgs(
       matchName: matchName,
@@ -127,7 +128,15 @@ class MatchesController {
       matchInvitedUsers: matchInvitedUsers,
     );
 
+    devService.log("test log args: ${insertMatchArgs.matchInvitedUserIds}");
+
     // and now call service
+
+    // TODO test return
+
+    final matchId = await _matchesService.insertMatch(insertMatchArgs);
+
+    return matchId;
   }
 
   Stream<List<Match>> get matchesStream => _matchesState.matchesStream;
@@ -156,6 +165,7 @@ class InsertMatchArgs {
       this.matchInvitedUserIds);
 }
 
+// TODO move this to helpers somewhere
 InsertMatchArgs generateInsertMatchArgs({
   required String matchName,
   required String matchDateTime,
@@ -164,7 +174,7 @@ InsertMatchArgs generateInsertMatchArgs({
   required String matchMaxPlayers,
   required String matchDescription,
   required String matchOrganizerPhoneNumber,
-  required List<User> matchInvitedUsers,
+  required List<User?> matchInvitedUsers,
 }) {
   final normalizedName = matchName.trim();
   // TODO this default value should probably be offered to user as a default anyhow
@@ -176,7 +186,14 @@ InsertMatchArgs generateInsertMatchArgs({
   final normalizedMaxPlayers = int.tryParse(matchMaxPlayers) ?? 12;
   final normalizedDescription = matchDescription.trim();
   final normalizedPhoneNumber = matchOrganizerPhoneNumber.trim();
-  final normalizedUserIds = matchInvitedUsers.map((u) => u.id).toList();
+  final normalizedUserIds = matchInvitedUsers.where((u) {
+    final user = u;
+    if (user == null) return false;
+    return true;
+  }).map((u) {
+    // TODO here we know that user cannot be null
+    return u!.id;
+  }).toList();
 
   final matchArgs = InsertMatchArgs(
     normalizedName,

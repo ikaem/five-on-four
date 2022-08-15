@@ -27,6 +27,7 @@ class Player {
     id = row["player_id"] as int;
     // nickname = row["player_nickname"] as String;
     nickname = row["nickname"] as String;
+    // nickname = "Pero";
     matchStatus = row["player_status"] as String;
   }
 

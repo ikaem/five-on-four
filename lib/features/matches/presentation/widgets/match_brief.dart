@@ -18,7 +18,7 @@ class MatchBrief extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final matchLabel = "${match.name}, ${match.date}, ${match.time}";
+    final matchLabel = "${match.name}, ${match.datetime}";
     final playersLabel =
         "${match.maxPlayers} players max, ${match.players.length} joined";
 

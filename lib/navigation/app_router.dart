@@ -4,6 +4,8 @@ import 'package:five_on_four/screens/matches/match_edit_screen.dart';
 import 'package:five_on_four/screens/matches/match_screen.dart';
 import 'package:flutter/cupertino.dart';
 
+// TODO but here i did define a type, not a function - so i could define a type for a map
+// OK, SO THIS WORKS because we dont know what are exact names of fields in the map
 typedef RoutesMap = Map<String, Widget Function(BuildContext)>;
 
 class AppRouter {
