@@ -1,6 +1,6 @@
 import 'package:five_on_four/features/users/application/services/users_service.dart';
 import 'package:five_on_four/features/users/data/repositories/users_repository_provider.dart';
-import 'package:five_on_four/features/users/doman/models/user.dart';
+import 'package:five_on_four/features/users/domain/models/user.dart';
 import 'package:five_on_four/services/database/db.dart';
 import 'package:five_on_four/services/dev/dev_service.dart';
 

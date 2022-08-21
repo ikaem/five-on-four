@@ -1,7 +1,7 @@
 import 'package:five_on_four/features/matches/domain/index.dart';
 import 'package:five_on_four/features/matches/domain/models/player.dart';
 import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
-import 'package:five_on_four/features/users/doman/models/user.dart';
+import 'package:five_on_four/features/users/domain/models/user.dart';
 import 'package:five_on_four/features/users/presentation/controllers/users_controller.dart';
 import 'package:five_on_four/navigation/extensions.dart';
 import 'package:five_on_four/services/dev/dev_service.dart';

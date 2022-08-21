@@ -1,6 +1,7 @@
 class User {
   late final int id;
   late final String nickname;
+  // TODO should probably add email soon
 
   User({
     required this.id,

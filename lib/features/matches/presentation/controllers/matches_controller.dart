@@ -4,13 +4,13 @@ import 'package:five_on_four/features/matches/application/services/matches_servi
 import 'package:five_on_four/features/matches/data/repositories/matches_repository_provider.dart';
 import 'package:five_on_four/features/matches/domain/index.dart';
 import 'package:five_on_four/features/matches/presentation/states/matches_state.dart';
-import 'package:five_on_four/features/users/doman/models/user.dart';
+import 'package:five_on_four/features/users/domain/models/user.dart';
 import 'package:five_on_four/services/database/db.dart';
 import 'package:five_on_four/services/dev/dev_service.dart';
 
 // THIS does not really need to be singleton - state will have to be singleton, but this does not need to
 class MatchesController {
-  final MatchesState _matchesState = MatchesState();
+  final MatchesStateStream _matchesState = MatchesStateStream();
   final MatchesService _matchesService = MatchesService(
     // TODO how to make this dynamic - how to make it able to use another db for testing?
     // maybe pass some env variable that holds path to a testing database?

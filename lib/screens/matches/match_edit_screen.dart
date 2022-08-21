@@ -1,6 +1,7 @@
 import 'package:date_time_picker/date_time_picker.dart';
+import 'package:five_on_four/features/authentication/presentation/controllers/auth_controller.dart';
 import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
-import 'package:five_on_four/features/users/doman/models/user.dart';
+import 'package:five_on_four/features/users/domain/models/user.dart';
 import 'package:five_on_four/features/users/presentation/controllers/users_controller.dart';
 import 'package:five_on_four/navigation/app_router.dart';
 import 'package:five_on_four/services/dev/dev_service.dart';
@@ -11,12 +12,15 @@ class MatchEditScreen extends StatefulWidget {
   MatchEditScreen({Key? key}) : super(key: key);
 
   final UsersController _usersController = UsersController();
+  final AuthController _authController = AuthController();
 
   @override
   State<MatchEditScreen> createState() => _MatchEditScreenState();
 }
 
 class _MatchEditScreenState extends State<MatchEditScreen> {
+  User? currentUser;
+
   List<User?> _invitedUsers = [];
   final _formKey = GlobalKey<FormState>();
   final _matchesController = MatchesController();
@@ -54,6 +58,12 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO test - this is probably not the best practice
+
+    final User? user = widget._authController.authState(context)?.user;
+
+    devService
+        .log("THIS IS USER FROM INHERITED WIDGET PROVIDER: ${user?.nickname}");
     devService.log(
         "this is value in the datetime controller: ${_dateTimeController.text}");
 

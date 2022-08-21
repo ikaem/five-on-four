@@ -1,3 +1,4 @@
+import 'package:five_on_four/features/authentication/presentation/controllers/auth_controller.dart';
 import 'package:five_on_four/features/matches/domain/models/match.dart';
 import 'package:five_on_four/features/matches/index.dart';
 import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
@@ -15,9 +16,15 @@ class HomeScreen extends StatelessWidget {
   HomeScreen({Key? key}) : super(key: key);
 
   final MatchesController _matchesController = MatchesController();
+  final AuthController _authController = AuthController();
 
   @override
   Widget build(BuildContext context) {
+    final authState = _authController.authState(context);
+
+    devService.log(
+        "this is auth state from the provider inherited in HOME PAGE: $authState");
+
     return Scaffold(
       appBar: AppBar(
           title: const Text("Home"),

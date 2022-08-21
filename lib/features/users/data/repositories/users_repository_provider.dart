@@ -1,6 +1,6 @@
 import 'package:five_on_four/features/users/data/repositories/database/users_database_repository.dart';
 import 'package:five_on_four/features/users/data/repositories/users_repository.dart';
-import 'package:five_on_four/features/users/doman/models/user.dart';
+import 'package:five_on_four/features/users/domain/models/user.dart';
 import 'package:five_on_four/services/database/db.dart';
 
 class UsersRepositoryProvider implements UsersRepository {
