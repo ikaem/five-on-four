@@ -233,6 +233,7 @@ class _MyAppState extends State<MyApp> {
         // initialRoute: initialRoute,
         // TODO i like this because we can set arghuments here
         onGenerateRoute: onGenerateRoute,
+        // TODO try using initialRoute again - it should work now when actually initializing super state - because ia wasnt before
         home: getHomePage(),
         // onGenerateInitialRoutes: onGenerateInitialRoutes,
 
