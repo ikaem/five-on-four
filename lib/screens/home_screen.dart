@@ -22,9 +22,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final authState = _authController.authState(context);
 
-    devService.log(
-        "this is auth state from the provider inherited in HOME PAGE: $authState");
-
+// TODO this could be separated into tab navigation, for my profile, so not everything it crammed into one page
     return Scaffold(
       appBar: AppBar(
           title: const Text("Home"),

@@ -34,6 +34,8 @@ class MatchesDatabaseRepository implements MatchesRepository {
     // TODO this sould actuaqlly accept databse, so it can query on it - so each functzion should accept database
     final dbConnection = await _db.getConnection;
 
+    final organizerId = args.organizerId;
+
     final matchId = await dbConnection.transaction((txn) async {
       final matchId = await txn.rawInsert(MatchesMutations.insertMatch(), [
         args.matchDateTime,
@@ -42,7 +44,8 @@ class MatchesDatabaseRepository implements MatchesRepository {
         args.matchLocation,
         args.matchMaxPlayers,
         args.matchDescription,
-        args.matchOrganizerPhoneNumber
+        args.matchOrganizerPhoneNumber,
+        args.organizerId
       ]);
 
 // i could use transaction inside the loop, but that would mean mutliple statemenrt and pinging db
@@ -50,12 +53,18 @@ class MatchesDatabaseRepository implements MatchesRepository {
 // unless we want the result - then even in batch there will be multiple resuilts
       final batch = txn.batch();
 
+      if (args.isOrganizerJoining) {
+        batch.rawInsert(PlayersMutations.insertPlayer(),
+            [organizerId, matchId, PlayerMatchStatus.joined]);
+      }
+
 // player id will be hardcoded for now
       for (int playerId in args.matchInvitedUserIds) {
         batch.rawInsert(PlayersMutations.insertPlayer(), [
           // TODO later remove having nicknames here
           playerId,
           matchId,
+          // TODO this needs to be adjsuted so that if player id is same as organizer id, and organizer joined, this status is joined
           PlayerMatchStatus.invited
         ]);
       }

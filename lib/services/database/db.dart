@@ -4,6 +4,7 @@ import 'package:five_on_four/services/database/exceptions.dart';
 import 'package:five_on_four/services/database/queries.dart';
 import 'package:five_on_four/services/database/seed.dart';
 import 'package:five_on_four/services/database/types.dart';
+import 'package:five_on_four/services/dev/dev_service.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -158,16 +159,32 @@ class Db {
 // TODO transaction should commit automatically if no errors
     await db.transaction((trx) async {
       // TODO check to make sure that this actually returns just one instead of multiple ids
-      await trx.rawInsert(Seed.insertMatches());
       await trx.rawInsert(Seed.insertUsers());
+      final insertedUsersRows = await trx.rawQuery(Seed.getAllUsers());
+
+// TODO not sure if i need another batch, or i can jsut batch commit and do another batch
+// TODO might neede a different batch here
+      final batchMatches = trx.batch();
+
+      for (var userRow in insertedUsersRows) {
+        final userId = userRow["id"] as int;
+
+        batchMatches.rawInsert(Seed.insertMatch(userId));
+      }
+
+      final resultOfBatchedMatchesInsert =
+          await batchMatches.commit(noResult: true);
+
+      // TODO this should have each user create one match
+      // so loop over all users, add to match, and then batch commit
+      // await trx.rawInsert(Seed.insertMatches());
 
       // print("passed creating matches, $matchIdsRows");
       final insertedMatchesRows = await trx.rawQuery(Seed.getAllMatches());
-      final insertedUsersRows = await trx.rawQuery(Seed.getAllUsers());
 
-      final batch = trx.batch();
       // print("added matches - $insertedMatchesRows");
 
+      final batchPlayers = trx.batch();
 // for every match, create as many players as we have users
       for (var matchRow in insertedMatchesRows) {
         final matchId = matchRow["id"] as int;
@@ -179,11 +196,11 @@ class Db {
         for (var userRow in insertedUsersRows) {
           final userId = userRow["id"] as int;
 
-          batch.rawInsert(Seed.insertMatchPlayer(matchId, userId));
+          batchPlayers.rawInsert(Seed.insertMatchPlayer(matchId, userId));
         }
       }
 
-      await batch.commit();
+      await batchPlayers.commit(noResult: true);
     });
   }
 

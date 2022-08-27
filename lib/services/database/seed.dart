@@ -31,7 +31,8 @@ class Seed {
       m."location",
       m.max_players,
       m.description,
-      m.phone_number
+      m.phone_number,
+      m.organizer_id
     from "match" m;
   ''';
   static String getAllMatchesWithPlayers() => '''
@@ -150,6 +151,32 @@ class Seed {
     );
   ''';
 
+  static String insertMatch(int matchOrganizer) => '''
+    insert into "match" 
+    (
+      "datetime",
+      "duration",
+      "name",
+      "location",
+      max_players,
+      description,
+      phone_number,
+      organizer_id
+    )
+    values
+    (
+      '2022-08-09T05:59:00.000',
+      3600000,
+      'Random match name',
+      'Lacabamba',
+      12,
+      'Lorem description',
+      '+123456789',
+      $matchOrganizer
+    );
+  ''';
+
+// TODO might be obsolete
   static String insertMatches() => '''
     insert into "match" 
     (

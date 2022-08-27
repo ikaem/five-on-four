@@ -15,12 +15,13 @@ typedef RoutesMap = Map<String, Widget Function(BuildContext)>;
 
 class AppRouter {
   static final _privateRoutes = {
-    // Routes.homeRoute: (context) => HomeScreen(),
-    // Routes.rootRoute: (BuildContext context) => RootRoute(),
-    Routes.homeRoute: (BuildContext context) => HomeScreen(),
-    Routes.matchEditRoute: (BuildContext context) => MatchEditScreen(),
-    Routes.matchViewRoute: (BuildContext context) => MatchScreen(),
-    Routes.loginRoute: (context) => LoginScreen(),
+    // TODO these should be split into private and public routes somewhow eventually
+
+    Routes.homeRoute: () => (BuildContext context) => HomeScreen(),
+    Routes.matchEditRoute: () => (BuildContext context) => MatchEditScreen(),
+    Routes.matchViewRoute: (int matchId) =>
+        (BuildContext context) => MatchScreen(matchId),
+    Routes.loginRoute: () => (context) => LoginScreen(),
   };
 
   static final _publicRoutes = {
@@ -28,11 +29,11 @@ class AppRouter {
   };
 
 // TODO old
-  static RoutesMap generateRoutes(BuildContext context, Auth? auth) {
-    // if (auth == null) return _publicRoutes;
+  // static RoutesMap generateRoutes(BuildContext context, Auth? auth) {
+  //   // if (auth == null) return _publicRoutes;
 
-    return _privateRoutes;
-  }
+  //   return _privateRoutes;
+  // }
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // HERE we could define in auth is true, but it might not be needed, because intiial route might handle that
@@ -43,31 +44,24 @@ class AppRouter {
     switch (settings.name) {
       case Routes.loginRoute:
         // return MaterialPageRoute(builder: (_) => HomeScreen());
-        return MaterialPageRoute(builder: _privateRoutes[Routes.loginRoute]!);
+        return MaterialPageRoute(builder: _privateRoutes[Routes.loginRoute]!());
 
       case Routes.homeRoute:
         // return MaterialPageRoute(builder: (_) => HomeScreen());
-        return MaterialPageRoute(builder: _privateRoutes[Routes.homeRoute]!);
+        return MaterialPageRoute(builder: _privateRoutes[Routes.homeRoute]!());
 
       case Routes.matchEditRoute:
         // return MaterialPageRoute(builder: (_) => HomeScreen());
         return MaterialPageRoute(
-            builder: _privateRoutes[Routes.matchEditRoute]!);
+            builder: _privateRoutes[Routes.matchEditRoute]!());
       case Routes.matchViewRoute:
+        devService
+            .log("this is args in on generate route: ${settings.arguments}");
         // return MaterialPageRoute(builder: (_) => HomeScreen());
+        // TODO should probably be checking if this is correct type of argument somehow
         return MaterialPageRoute(
-            builder: _privateRoutes[Routes.matchViewRoute]!);
-
-      // TODO switch to handle arguments from here, too
-
-      /* 
-        case RoutePaths.SecondScreen:
-        // you can do things like pass arguments to screens
-        final event = settings.arguments as Event;
-        return MaterialPageRoute(
-            builder: (_) => YourSecondScreenWidget(event: event));
-        
-         */
+            builder:
+                _privateRoutes[Routes.matchViewRoute]!(settings.arguments));
 
       default:
         return MaterialPageRoute(

@@ -73,8 +73,6 @@ class MatchesController {
 
     final match = await _matchesService.getMatch(matchId);
 
-    devService.log("here in controller, ${match?.id}");
-
     if (match == null) {
 // TODO remove this match from cached matches
 
@@ -108,6 +106,7 @@ class MatchesController {
   // while inserting players will be a batch function
 
   Future<int> createMatch({
+    required int organizerId,
     required String matchName,
     required String matchDateTime,
     required String matchDuration,
@@ -116,8 +115,10 @@ class MatchesController {
     required String matchDescription,
     required String matchOrganizerPhoneNumber,
     required List<User?> matchInvitedUsers,
+    required bool isOrganizerJoining,
   }) async {
     final insertMatchArgs = generateInsertMatchArgs(
+      organizerId: organizerId,
       matchName: matchName,
       matchDateTime: matchDateTime,
       matchDuration: matchDuration,
@@ -126,6 +127,7 @@ class MatchesController {
       matchDescription: matchDescription,
       matchOrganizerPhoneNumber: matchOrganizerPhoneNumber,
       matchInvitedUsers: matchInvitedUsers,
+      isOrganizerJoining: isOrganizerJoining,
     );
 
     devService.log("test log args: ${insertMatchArgs.matchInvitedUserIds}");
@@ -144,8 +146,8 @@ class MatchesController {
 
 // this is test - this model, org args, should live somewhere else
 class InsertMatchArgs {
+  int organizerId;
   String matchName;
-  // TODO these possibly should be date time and not string
   String matchDateTime;
   int matchDuration;
   String matchLocation;
@@ -153,20 +155,26 @@ class InsertMatchArgs {
   String matchDescription;
   String matchOrganizerPhoneNumber;
   List<int> matchInvitedUserIds;
+  // TODO test
+  bool isOrganizerJoining;
 
   InsertMatchArgs(
-      this.matchName,
-      this.matchDateTime,
-      this.matchDuration,
-      this.matchLocation,
-      this.matchMaxPlayers,
-      this.matchDescription,
-      this.matchOrganizerPhoneNumber,
-      this.matchInvitedUserIds);
+    this.organizerId,
+    this.matchName,
+    this.matchDateTime,
+    this.matchDuration,
+    this.matchLocation,
+    this.matchMaxPlayers,
+    this.matchDescription,
+    this.matchOrganizerPhoneNumber,
+    this.matchInvitedUserIds,
+    this.isOrganizerJoining,
+  );
 }
 
 // TODO move this to helpers somewhere
 InsertMatchArgs generateInsertMatchArgs({
+  required int organizerId,
   required String matchName,
   required String matchDateTime,
   required String matchDuration,
@@ -175,6 +183,7 @@ InsertMatchArgs generateInsertMatchArgs({
   required String matchDescription,
   required String matchOrganizerPhoneNumber,
   required List<User?> matchInvitedUsers,
+  required bool isOrganizerJoining,
 }) {
   final normalizedName = matchName.trim();
   // TODO this default value should probably be offered to user as a default anyhow
@@ -196,15 +205,16 @@ InsertMatchArgs generateInsertMatchArgs({
   }).toList();
 
   final matchArgs = InsertMatchArgs(
-    normalizedName,
-    normalizedDateTime,
-    normalizedDurationInMilliseconds,
-    normalizedLocation,
-    normalizedMaxPlayers,
-    normalizedDescription,
-    normalizedPhoneNumber,
-    normalizedUserIds,
-  );
+      organizerId,
+      normalizedName,
+      normalizedDateTime,
+      normalizedDurationInMilliseconds,
+      normalizedLocation,
+      normalizedMaxPlayers,
+      normalizedDescription,
+      normalizedPhoneNumber,
+      normalizedUserIds,
+      isOrganizerJoining);
 
   return matchArgs;
 }

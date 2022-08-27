@@ -1,3 +1,4 @@
+import 'package:five_on_four/features/matches/constants/player_match_status.dart';
 import 'package:five_on_four/features/matches/domain/index.dart';
 import 'package:five_on_four/features/matches/domain/models/player.dart';
 import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
@@ -14,7 +15,9 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 class MatchScreen extends StatefulWidget {
-  MatchScreen({Key? key}) : super(key: key);
+  final int matchId;
+
+  MatchScreen(this.matchId, {Key? key}) : super(key: key);
 
   @override
   State<MatchScreen> createState() => _MatchScreenState();
@@ -146,38 +149,123 @@ class _MatchScreenState extends State<MatchScreen> {
             SizedBox(
               height: 30,
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              key: Key("match-players"),
-              children: <Widget>[
-                // TODO probably should create some compount widget for text with icon or some such
-                TextWithIcon(
-                  text: "Joined players",
-                  icon: Icons.people,
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-                // TODO here rendered players
-                for (Player player in match.players)
-                  Row(
-                    children: <Widget>[
-                      Text(player.nickname),
-                    ],
-                  ),
-              ],
-            )
+            _renderTabbableStatusedPlayers(match.players),
+            // Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   key: Key("match-players-joined"),
+            //   children: <Widget>[
+            //     // TODO probably should create some compount widget for text with icon or some such
+            //     TextWithIcon(
+            //       text: "Joined players",
+            //       icon: Icons.people,
+            //       textStyle: Theme.of(context).textTheme.labelLarge,
+            //     ),
+            //     // TODO here rendered players
+            //     // for (Player player in match.players)
+            //     //   Row(
+            //     //     children: <Widget>[
+            //     //       Text(player.nickname),
+            //     //     ],
+            //     //   ),
+
+            //     ..._renderPlayers(match.players, PlayerMatchStatus.joined)
+            //   ],
+            // ),
+            // Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   key: Key("match-players-invited"),
+            //   children: <Widget>[
+            //     // TODO probably should create some compount widget for text with icon or some such
+            //     TextWithIcon(
+            //       text: "Invited players",
+            //       icon: Icons.people,
+            //       textStyle: Theme.of(context).textTheme.labelLarge,
+            //     ),
+            //     // TODO here rendered players
+            //     // for (Player player in match.players)
+            //     //   Row(
+            //     //     children: <Widget>[
+            //     //       Text(player.nickname),
+            //     //     ],
+            //     //   ),
+
+            //     ..._renderPlayers(match.players, PlayerMatchStatus.invited)
+            //   ],
+            // )
           ],
         ),
       ),
     );
   }
 
+  // TODO test
+  Widget _renderTabbableStatusedPlayers(List<Player> players) {
+    final test = double.maxFinite;
+    devService.log("WHAQT IS MAX FINITE: $test");
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: <Widget>[
+          TabBar(
+            tabs: [
+              Tab(
+                text: "Joined players",
+              ),
+              Tab(
+                text: "Invited players",
+              )
+            ],
+          ),
+          SizedBox(
+            // TODO this does not seem correct - need to have some way to expand the size dynamically
+            height: 100,
+            child: TabBarView(children: <Widget>[
+              Column(
+                children: _renderPlayers(players, PlayerMatchStatus.joined),
+              ),
+              Column(
+                children: _renderPlayers(players, PlayerMatchStatus.invited),
+              ),
+            ]),
+          ),
+          // TabBarView(children: <Widget>[
+          //   Column(
+          //     children: _renderPlayers(players, PlayerMatchStatus.joined),
+          //   ),
+          //   Column(
+          //     children: _renderPlayers(players, PlayerMatchStatus.invited),
+          //   ),
+          // ]),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _renderPlayers(List<Player> players, String playerMatchStatus) {
+    final playerRows = players
+        .where((p) => p.matchStatus == playerMatchStatus)
+        .map<Widget>((p) {
+      // TODO probablys not the best approach, since no key assign to any row
+      return Row(
+        children: <Widget>[
+          Text(p.nickname),
+        ],
+      );
+    }).toList();
+
+    return playerRows;
+  }
+
   Future<Match?> _handleLoadMatch(BuildContext context) async {
     // TODO later, erros should be just propagated from here
-    int? matchId = context.getRouteArgument<int>();
+    // int? matchId = context.getRouteArgument<int>();
     // devService.log("gere");
 
     // devService.log("match id: $matchId");/*  */
 
+    final matchId = widget.matchId;
+
+    devService.log("up to here: $matchId");
     if (matchId == null) {
       // in this case, we would also probably return some error later
       // this would work with just returning null too

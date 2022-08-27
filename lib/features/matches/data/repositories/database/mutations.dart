@@ -8,10 +8,12 @@ class MatchesMutations {
       "location",
       max_players,
       description,
-      phone_number
+      phone_number,
+      organizer_id
     )
   values
     (
+      ?,
       ?,
       ?,
       ?,

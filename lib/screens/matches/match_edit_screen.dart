@@ -25,6 +25,7 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
   final _formKey = GlobalKey<FormState>();
   final _matchesController = MatchesController();
 
+  bool isOrganizerJoining = false;
   final TextEditingController _matchNameController = TextEditingController();
   final TextEditingController _dateTimeController =
       TextEditingController(text: "");
@@ -58,17 +59,9 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO test - this is probably not the best practice
+    // TODO test - this is probably not the best practice - this would ideally be generated in the class as a field, so we have the value available everywhere? or not?
+    final User? currentUser = widget._authController.authState(context)?.user;
 
-    final User? user = widget._authController.authState(context)?.user;
-
-    devService
-        .log("THIS IS USER FROM INHERITED WIDGET PROVIDER: ${user?.nickname}");
-    devService.log(
-        "this is value in the datetime controller: ${_dateTimeController.text}");
-
-    devService
-        .log("this is invited users: ${_invitedUsers.map((u) => u?.nickname)}");
     return Scaffold(
       appBar: AppBar(
         // TODO title will also be dynamic, based on whether we edit or create new item
@@ -104,15 +97,6 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
                 },
               ),
 
-// TODO old
-              // TextField(
-              //   controller: _matchNameController,
-              //   style: Theme.of(context).textTheme.headline3,
-              //   decoration: InputDecoration(
-              //     hintText: "Name your match",
-              //     hintStyle: Theme.of(context).textTheme.headline3,
-              //   ),
-              // ),
               const SizedBox(
                 height: 30,
               ),
@@ -124,32 +108,18 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
                 type: DateTimePickerType.dateTime,
                 dateMask: 'd MMMM, yyyy - hh:mm a',
                 controller: _dateTimeController,
-                //initialValue: _initialValue,
-                // TODO
-                /* 
-                but this does not solve issue of time not being correct 
-                so this should be handled 
-                manually somehow
-                to create date now now if time before now
-                and it should be validated properyl in the controller maybe, or in the handler for create in UI
-                 */
                 firstDate: DateTime.now(),
                 lastDate: DateTime(2100),
-                //icon: Icon(Icons.event),
-                // dateLabelText: 'Date Time',
                 dateHintText: 'Match date and time',
                 use24HourFormat: false,
                 locale: Locale('en', 'US'),
-                // onChanged: (val) => setState(() => _valueChanged2 = val),
                 icon: Icon(Icons.calendar_month),
                 validator: (val) {
-                  // setState(() => _valueToValidate2 = val ?? '');
                   if (val == null || val.isEmpty) {
                     return "Match date and time are requuired";
                   }
                   return null;
                 },
-                // onSaved: (val) => setState(() => _valueSaved2 = val ?? ''),
               ),
               TextFormField(
                 controller: _durationController,
@@ -257,12 +227,6 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
               const SizedBox(
                 height: 30,
               ),
-              // Checkbox(
-              //   value: true,
-              //   onChanged: (isChecked) {
-              //     devService.log("checkbox is checked: $isChecked");
-              //   },
-              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
@@ -270,9 +234,11 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
                     width: 16,
                     height: 16,
                     child: Checkbox(
-                      value: true,
+                      value: isOrganizerJoining,
                       onChanged: (isChecked) {
-                        devService.log("checkbox is checked: $isChecked");
+                        setState(() {
+                          isOrganizerJoining = isChecked == true ? true : false;
+                        });
                       },
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
@@ -311,7 +277,7 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
                     ],
                   ),
                   for (final user in _invitedUsers)
-                    _renderSingleUserAutocomplete(user),
+                    _renderSingleUserAutocomplete(user, currentUser),
                   SizedBox(
                     height: 50,
                   )
@@ -323,7 +289,7 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
                   TextButton(
                     onPressed: () {
                       devService.log("Submitting new match");
-                      _handleSubmitNewMatch();
+                      _handleSubmitNewMatch(currentUser);
                     },
                     child: Text("Create match"),
                     style: TextButton.styleFrom(
@@ -346,7 +312,11 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
     );
   }
 
-  void _handleSubmitNewMatch() async {
+  void _handleSubmitNewMatch(User? user) async {
+    final currentUser = user;
+    // TODO even logout here later when implement logout
+    if (currentUser == null) return;
+
     final state = _formKey.currentState;
     if (state == null) return;
 
@@ -363,6 +333,7 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
     // todo should probably have a function to format all this nicely and pass on to the controller?
     // or maybe controller can handle formatting, converting to date, time, milliseconds and so on, grab only ids from users and so on...
 
+    final organizerId = currentUser.id;
     final matchName = _matchNameController.text;
     final matchDateTime = _dateTimeController.text;
     final matchDuration = _durationController.text;
@@ -390,6 +361,7 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
 
     try {
       matchId = await _matchesController.createMatch(
+        organizerId: organizerId,
         matchName: matchName,
         matchDateTime: matchDateTime,
         matchDuration: matchDuration,
@@ -398,6 +370,7 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
         matchDescription: matchDescription,
         matchOrganizerPhoneNumber: matchOrganizerPhoneNumber,
         matchInvitedUsers: invitedUsers,
+        isOrganizerJoining: isOrganizerJoining,
       );
 
       // AppRouter.toMatch(context, matchId);
@@ -445,7 +418,7 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
     });
   }
 
-  Widget _renderSingleUserAutocomplete(User? user) {
+  Widget _renderSingleUserAutocomplete(User? user, User? currentUser) {
     devService.log("this is user in render single user: ${user?.nickname}");
     final autocomplete = Autocomplete<User>(
       key: Key(user?.nickname ?? "null-user"),
@@ -462,8 +435,15 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
 // TODO this is pretty naive, loop withing loop - should probably handle it better
 
         final filteredUsers = users.where((userForInvite) {
+          final isCurrentUser = userForInvite.id == currentUser?.id;
+          devService.log("user!!: ${userForInvite.nickname}");
+          devService.log("current user!!: ${currentUser?.nickname}");
+          devService.log("is current user: ${currentUser?.nickname}");
+          if (isCurrentUser) return false;
+
           // TODO this is loop in a loop - this will lag a lot when a lot of users
           // so should probably solve this in future by passing a list of invited ids to the query, so sql can handle that with something like NOT ANY (LIST OF Ids)
+          // and also, send argument of current user, so it can filter that too
 
           final isUserAlreadyInvited = _invitedUsers
               .any((invitedUser) => invitedUser?.id == userForInvite.id);
@@ -511,10 +491,6 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
         final users = _invitedUsers;
 
         User? foundUser = users.firstWhere((element) => element == user);
-
-        devService.log("this is selection: $selection");
-        devService.log("this is found user: $foundUser");
-        devService.log("are they same?: ${foundUser == user}");
 
         // now i have to set user to this
 

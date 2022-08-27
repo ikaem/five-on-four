@@ -1,3 +1,4 @@
+import 'package:five_on_four/services/dev/dev_service.dart';
 import 'package:flutter/material.dart';
 
 extension NavigationExtension on BuildContext {
@@ -7,6 +8,8 @@ extension NavigationExtension on BuildContext {
     if (route == null) return null;
 
     final args = route.settings.arguments;
+
+    devService.log("args here: $args");
     if (args == null) return null;
     if (args is! T) return null;
 

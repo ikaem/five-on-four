@@ -19,7 +19,9 @@ class DatabaseQueries {
     "max_players"	INTEGER NOT NULL,
     "description"	TEXT NOT NULL,
     "phone_number"	TEXT NOT NULL,
-    PRIMARY KEY("id" AUTOINCREMENT)
+    "organizer_id"	INTEGER NOT NULL,
+    PRIMARY KEY("id" AUTOINCREMENT),
+	  FOREIGN KEY("organizer_id") REFERENCES "user"("id") ON DELETE CASCADE
   );
   ''';
 
