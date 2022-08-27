@@ -1,17 +1,35 @@
 // TODO player will effectively be an app user's membership on a match
 import 'dart:convert';
 
+import 'package:five_on_four/services/dev/dev_service.dart';
+import 'package:flutter/cupertino.dart';
+
+// tod oTHIS NEEDS TO MOVE TO ITS OWN FEATURE
+// BUT FOR NOW, WILL NEED TO BE USED IN MATCH MODEL TOO
+// we dont want widgets to mutate stsate of these models
+// @immutable
 class Player {
-  final String id;
-  final String nickname;
+  late final int id;
+  late final String nickname;
   // TODO this shold later be some kind of enum type
-  final String matchStatus;
+  late final String matchStatus;
 
   Player({
     required this.id,
     required this.nickname,
     required this.matchStatus,
   });
+
+  // TODO test
+  Player.fromMatchDbRow(Map<String, Object?> row) {
+    // devService.log(row);
+    // create constants for these?
+    id = row["player_id"] as int;
+    // nickname = row["player_nickname"] as String;
+    nickname = row["nickname"] as String;
+    // nickname = "Pero";
+    matchStatus = row["player_status"] as String;
+  }
 
   factory Player.fromJson(Map<String, dynamic> json) {
     final id = json["id"];

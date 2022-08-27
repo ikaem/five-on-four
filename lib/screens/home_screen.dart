@@ -1,18 +1,28 @@
+import 'package:five_on_four/features/authentication/presentation/controllers/auth_controller.dart';
 import 'package:five_on_four/features/matches/domain/models/match.dart';
 import 'package:five_on_four/features/matches/index.dart';
+import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
 import 'package:five_on_four/features/matches/presentation/widgets/match_brief.dart';
 import 'package:five_on_four/navigation/app_router.dart';
+import 'package:five_on_four/services/dev/dev_service.dart';
 import 'package:five_on_four/widgets/app_bar_popup_menu/app_bar_popup_menu.dart';
+import 'package:five_on_four/widgets/loading_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  HomeScreen({Key? key}) : super(key: key);
+
+  final MatchesController _matchesController = MatchesController();
+  final AuthController _authController = AuthController();
 
   @override
   Widget build(BuildContext context) {
+    final authState = _authController.authState(context);
+
+// TODO this could be separated into tab navigation, for my profile, so not everything it crammed into one page
     return Scaffold(
       appBar: AppBar(
           title: const Text("Home"),
@@ -112,16 +122,17 @@ class HomeScreen extends StatelessWidget {
                     ),
                     MatchBrief(
                       match: Match(
-                        id: "test",
-                        date: "20/08/2022",
-                        name: "Test upcoming match",
-                        time: "18:30",
-                        location: "Location",
-                        maxPlayers: 12,
-                        description: "QQuick Lorem Ipsum here",
-                        organizerPhoneNumber: "123456789",
-                        players: ["Luka", "Ivan", "Martina"],
-                      ),
+                          id: 1,
+                          datetime: "20/08/2022",
+                          duration: 1,
+                          name: "Test upcoming match",
+                          location: "Location",
+                          maxPlayers: 12,
+                          description: "QQuick Lorem Ipsum here",
+                          organizerPhoneNumber: "123456789",
+                          players: []
+                          // players: ["Luka", "Ivan", "Martina"],
+                          ),
                       playerMatchActionLabel: PlayerMatchAction.unjoin,
                       handlePlayerMatchAction: () async {},
                     )
@@ -146,7 +157,8 @@ class HomeScreen extends StatelessWidget {
             key: Key("matches-filtered"),
             child: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: _renderFilteredMatches(),
+              // child: _renderFilteredMatches(),
+              child: _renderFilteredMatchesFromStream(context),
             ),
           ),
         ],
@@ -177,6 +189,53 @@ class HomeScreen extends StatelessWidget {
             ],
           );
         });
+  }
+
+  // TODO what does this return
+  _renderFilteredMatchesFromStream(BuildContext context) {
+    final streamBuilder = StreamBuilder(
+      stream: _matchesController.matchesStream,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<List<Match>> snapshot,
+      ) {
+        // TODO good link here
+        // https: //stackoverflow.com/a/55528778
+        final matches = snapshot.data;
+
+        // devService.log("passed");
+
+        if (matches == null) {
+          // SPIN SOMEHOW
+          return const LoadingIndicator();
+        }
+
+        return ListView.builder(
+            itemCount: matches.length,
+            itemBuilder: (context, index) {
+              // TODO dont need this, but not sure if this is mandatory
+              // return ListTile();
+
+              final match = matches[index];
+
+              return Column(
+                children: [
+                  Divider(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  MatchBrief(
+                    match: match,
+                    playerMatchActionLabel: PlayerMatchAction.join,
+                    handlePlayerMatchAction: () async {},
+                  ),
+                ],
+              );
+            });
+      },
+    );
+
+    return streamBuilder;
   }
 
   Widget _renderMatchesFilter(BuildContext context) {
@@ -238,68 +297,6 @@ class HomeScreen extends StatelessWidget {
             onChanged: (String? value) {
               // here set on changed
             })
-      ],
-    );
-  }
-
-  Widget _renderMatchBrief(
-    BuildContext context, {
-    required String matchId,
-    required String matchName,
-    required String city,
-    required String dateString,
-    required String timeString,
-    required int maxPlayers,
-    required int joinedPlayers,
-    required String actionLabel,
-    required HandlePlayerMatchAction userMatchAction,
-  }) {
-    final matchLabel = "$matchName, $dateString, $timeString";
-    final playersLabel = "$maxPlayers players max, $joinedPlayers joined";
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        TextButton(
-          onPressed: () {
-            AppRouter.toMatch(context, matchId);
-          },
-          child: Text(matchLabel, style: Theme.of(context).textTheme.headline6),
-          style: TextButton.styleFrom(padding: EdgeInsets.all(0)),
-        ),
-        SizedBox(
-          height: 30,
-          child: TextButton.icon(
-            style: ButtonStyle(
-              // padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(1)),
-              padding: MaterialStateProperty.all<EdgeInsets>(
-                  const EdgeInsets.only(top: 5, bottom: 5)),
-              // fixedSize: MaterialStateProperty.<Size>(Size())
-            ),
-            onPressed: () {
-              // this should open maps
-            },
-            icon: const Icon(Icons.location_on, size: 16),
-            label: Text(
-              city,
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 30,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(playersLabel,
-                  style: Theme.of(context).textTheme.labelMedium),
-              TextButton(
-                  onPressed: userMatchAction,
-                  child: Text(actionLabel.toUpperCase()))
-            ],
-          ),
-        )
       ],
     );
   }

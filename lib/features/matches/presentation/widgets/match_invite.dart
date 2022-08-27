@@ -8,8 +8,7 @@ class MatchInvite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final matchLabel =
-        "${match.name}, ${match.location}, ${match.date}, ${match.time}";
+    final matchLabel = "${match.name}, ${match.location}, ${match.datetime}";
 
     return TextButton(
       style: ButtonStyle(
