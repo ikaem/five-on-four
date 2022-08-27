@@ -40,7 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
           child: TextButton(
             child: Text("Login"),
             onPressed: () async {
-              devService.log("this should be logging stuff");
               await _authController.loginUser();
             },
           ),

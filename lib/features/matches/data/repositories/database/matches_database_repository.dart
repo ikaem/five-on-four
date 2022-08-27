@@ -55,7 +55,7 @@ class MatchesDatabaseRepository implements MatchesRepository {
 
       if (args.isOrganizerJoining) {
         batch.rawInsert(PlayersMutations.insertPlayer(),
-            [organizerId, matchId, PlayerMatchStatus.joined]);
+            [organizerId, matchId, PlayerMatchStatusLabel.joined]);
       }
 
 // player id will be hardcoded for now
@@ -65,7 +65,7 @@ class MatchesDatabaseRepository implements MatchesRepository {
           playerId,
           matchId,
           // TODO this needs to be adjsuted so that if player id is same as organizer id, and organizer joined, this status is joined
-          PlayerMatchStatus.invited
+          PlayerMatchStatusLabel.invited
         ]);
       }
       // TODO here we will actually insert multiple players
@@ -92,8 +92,6 @@ class MatchesDatabaseRepository implements MatchesRepository {
     // final matchesRows = await _db.query(MatchesQueryArgs());
     final matchesRows =
         await _db.queryRaw(MatchesQueries.getAllMatchesWithPlayers());
-
-    // devService.log("this is matches: $matchesRows");
     // final matches =
     //     matchesRows.map<Match>((mr) => Match.fromDbRow(mr)).toList();
 
@@ -110,19 +108,10 @@ class MatchesDatabaseRepository implements MatchesRepository {
 
   @override
   Future<Match?> getOne(int matchId) async {
-    devService.log("in the repo query: $matchId");
     final matchRows =
         await _db.queryRaw(MatchesQueries.getOneMatchWithPlayers(), [matchId]);
 
-    devService.log("test match rows: ${matchRows}");
-
-    // devService.log(matchRows);
-
-    // devService.log("here is match rows: $matchRows");
-
     final match = transformMatchRowsToMatch(matchRows);
-
-    devService.log("match: $match");
 
     // TODO this could have the transform funciton potentially throw an error too
     // TODO and then we would njto have to return conditionaly
@@ -133,8 +122,6 @@ class MatchesDatabaseRepository implements MatchesRepository {
     // this way we could be more informative towards the user on what went wrong
     // TODO use errors later, and check if future builder has some error handler
 
-    print("this IS MATCH!!!, $match");
-
     return match;
   }
 }
@@ -143,22 +130,14 @@ class MatchesDatabaseRepository implements MatchesRepository {
 Match? transformMatchRowsToMatch(List<Map<String, Object?>> matchRows) {
   if (matchRows.isEmpty) return null;
 
-  devService.log("in transform: $matchRows");
-
   Match match = Match.fromDbRowWithEmptyPlayers(matchRows[0]);
-  devService.log("pased: match - $match");
-
-  // print("match 0: ${match.id}");
 
   for (Map<String, Object?> matchRow in matchRows) {
-    devService.log("in the loop - $matchRow");
     Player player = Player.fromMatchDbRow(matchRow);
 
-    // devService.log("passed another match row");
     match.players.add(player);
   }
 
-  // devService.log("this is players: ${match.players}");
   return match;
 }
 
@@ -166,7 +145,7 @@ Match? transformMatchRowsToMatch(List<Map<String, Object?>> matchRows) {
 // TODO function to group matches
 List<Match> transformMatchesRowsToMatches(
     List<Map<String, Object?>> matchesRows) {
-  // devService.log("matchesRows: $matchesRows");
+  // devService.log("what is rowSSSS?: $matchesRows");
   // TODO first create map
   Map<int, Match> matchesMap = {};
 
@@ -181,25 +160,7 @@ List<Match> transformMatchesRowsToMatches(
 
     Player player = Player.fromMatchDbRow(matchRow);
 
-    // devService.log("this is player: $player");
-    // devService.log("map: $matchesMap");
-
     if (!matchesMap.containsKey(matchId)) {
-      // TODO this could potentually be a named cosntructor, or factory constructor
-      // it would return match with empty players
-      // but then we would add players
-      // matchesMap[matchId] = Match(
-      //   id: matchId,
-      //   date: matchRow[MatchColumn.date] as String,
-      //   time: matchRow[MatchColumn.time] as String,
-      //   name: matchRow[MatchColumn.name] as String,
-      //   location: matchRow[MatchColumn.location] as String,
-      //   maxPlayers: matchRow[MatchColumn.maxPlayers] as int,
-      //   description: matchRow[MatchColumn.description] as String,
-      //   organizerPhoneNumber: matchRow[MatchColumn.phoneNumber] as String,
-      //   players: [],
-      // );
-
 // TODO this does the same thing
       matchesMap[matchId] = Match.fromDbRowWithEmptyPlayers(matchRow);
 
@@ -216,9 +177,6 @@ List<Match> transformMatchesRowsToMatches(
 
   // tranbsform map to list
   final List<Match> matches = matchesMap.values.toList();
-
-  // devService.log("this is match: ${matches[3].players}");
-  // print("matches: $matches");
 
   return matches;
 }

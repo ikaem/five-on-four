@@ -28,7 +28,6 @@ class MatchesRepositoryProvider implements MatchesRepository {
   @override
   Future<List<Match>> getAll() async {
     final all = await _matchesRepository.getAll();
-    // devService.log("all: $all");
 
     return all;
   }
@@ -36,12 +35,7 @@ class MatchesRepositoryProvider implements MatchesRepository {
   @override
   // TODO later add throwing erros if no match, so this does not have to be optional
   Future<Match?> getOne(int matchId) async {
-    devService.log("is this called");
     final one = await _matchesRepository.getOne(matchId);
-
-    devService.log("this is one: $one");
-
-    // devService.log("this is one: $one");
     return one;
   }
 

@@ -1,4 +1,4 @@
-class PlayerMatchStatus {
+class PlayerMatchStatusLabel {
   static const joined = "joined";
   static const invited = "invited";
   static const onWaitingList = "on waiting list";

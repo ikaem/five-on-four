@@ -66,9 +66,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   List<Route<dynamic>> onGenerateInitialRoutes(String initialRoute) {
-    devService.log(
-        "LOGGING INITIAL ROUTE IN ON GENERATE INITIAL ROUTE: $initialRoute");
-
     if (initialRoute == Routes.homeRoute) {
       return [MaterialPageRoute(builder: (context) => HomeScreen())];
     }
@@ -86,8 +83,6 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     String initialRoute =
         userAuth == null ? Routes.loginRoute : Routes.homeRoute;
-
-    devService.log("THIS IS INITIAL ROUTE: $initialRoute");
 
     return AuthStateInherited(
       auth: userAuth,

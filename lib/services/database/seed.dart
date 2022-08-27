@@ -96,7 +96,9 @@ class Seed {
     );
   ''';
 
-  static String insertMatchPlayer(int matchId, int userId) => '''
+  static String insertMatchPlayer(
+          int matchId, int userId, String playerMatchStatus) =>
+      '''
     insert into player 
     (
       user_id,
@@ -107,10 +109,11 @@ class Seed {
     (
       $userId,
       $matchId,
-      'joined'
+      "$playerMatchStatus"
     );
   ''';
 
+// TODO not used
   static String insertMatchPlayers(int matchId) => '''
     insert into player 
     (

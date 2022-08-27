@@ -1,7 +1,10 @@
-import 'package:five_on_four/features/matches/constants/player_match_status.dart';
+import 'package:five_on_four/features/authentication/presentation/controllers/auth_controller.dart';
+import 'package:five_on_four/features/matches/constants/player_match_action_label.dart';
+import 'package:five_on_four/features/matches/constants/player_match_status_label.dart';
 import 'package:five_on_four/features/matches/domain/index.dart';
 import 'package:five_on_four/features/matches/domain/models/player.dart';
 import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
+import 'package:five_on_four/features/players/presentation/players_controller.dart';
 import 'package:five_on_four/features/users/domain/models/user.dart';
 import 'package:five_on_four/features/users/presentation/controllers/users_controller.dart';
 import 'package:five_on_four/navigation/extensions.dart';
@@ -27,13 +30,17 @@ class _MatchScreenState extends State<MatchScreen> {
   List<User> _users = [];
 
   final MatchesController _matchesController = MatchesController();
+  final PlayersController _playersController = PlayersController();
 
   final UsersController _usersController = UsersController();
+  final AuthController _authController = AuthController();
 
   @override
   Widget build(BuildContext context) {
 // TODO this all might need to be turned into a stateful widget
 // and then just create
+
+    final User? currentUser = _authController.authState(context)?.user;
 
     return Scaffold(
       appBar: AppBar(
@@ -62,15 +69,14 @@ class _MatchScreenState extends State<MatchScreen> {
             return CenteredMessage(message: "There is no such match");
           }
 
-          return _renderLoadedMatchData(context, match);
+          return _renderLoadedMatchData(context, match, currentUser);
         },
       ),
     );
   }
 
-  Padding _renderLoadedMatchData(BuildContext context, Match match) {
-    // devService.log("${match.players}");
-    // devService.log(match); --> this throws error
+  Padding _renderLoadedMatchData(
+      BuildContext context, Match match, User? user) {
     return Padding(
       padding: const EdgeInsets.all(10),
       // TODO not sure if this is good for all
@@ -86,7 +92,8 @@ class _MatchScreenState extends State<MatchScreen> {
             // TODO this text button needs styling
             // TODO this will eventually also need to to fetch info about user if they joined
             // or, we can get the user, and check against the joined users
-            TextButton(onPressed: () {}, child: Text("joined".toUpperCase())),
+            // TextButton(onPressed: () {}, child: Text("joined".toUpperCase())),
+            _renderPlayerMatchStatusAndAction(user, match),
             Column(
               key: Key("match-info"),
               children: <Widget>[
@@ -150,58 +157,130 @@ class _MatchScreenState extends State<MatchScreen> {
               height: 30,
             ),
             _renderTabbableStatusedPlayers(match.players),
-            // Column(
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   key: Key("match-players-joined"),
-            //   children: <Widget>[
-            //     // TODO probably should create some compount widget for text with icon or some such
-            //     TextWithIcon(
-            //       text: "Joined players",
-            //       icon: Icons.people,
-            //       textStyle: Theme.of(context).textTheme.labelLarge,
-            //     ),
-            //     // TODO here rendered players
-            //     // for (Player player in match.players)
-            //     //   Row(
-            //     //     children: <Widget>[
-            //     //       Text(player.nickname),
-            //     //     ],
-            //     //   ),
-
-            //     ..._renderPlayers(match.players, PlayerMatchStatus.joined)
-            //   ],
-            // ),
-            // Column(
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   key: Key("match-players-invited"),
-            //   children: <Widget>[
-            //     // TODO probably should create some compount widget for text with icon or some such
-            //     TextWithIcon(
-            //       text: "Invited players",
-            //       icon: Icons.people,
-            //       textStyle: Theme.of(context).textTheme.labelLarge,
-            //     ),
-            //     // TODO here rendered players
-            //     // for (Player player in match.players)
-            //     //   Row(
-            //     //     children: <Widget>[
-            //     //       Text(player.nickname),
-            //     //     ],
-            //     //   ),
-
-            //     ..._renderPlayers(match.players, PlayerMatchStatus.invited)
-            //   ],
-            // )
           ],
         ),
       ),
     );
   }
 
+  // TODO define actions here for user - or elsewhere, somewhere in helpers
+  // TODO also define some function that will do the choosing of which action to call for current user status
+  // and also define function what label to sho
+
+  Widget _renderPlayerMatchStatusAndAction(User? user, Match match) {
+    final spotsAvailable = match.maxPlayers -
+        match.players
+            .where((p) => p.matchStatus == PlayerMatchStatusLabel.joined)
+            .length;
+
+    final isSpotsAvailable = spotsAvailable > 0 ? true : false;
+    final matchAvailabilityStatus = isSpotsAvailable
+        ? "$spotsAvailable Spots available".toUpperCase()
+        : "Full".toUpperCase();
+
+    final playerMatchStatus = _getPlayerMatchStatus(user, match);
+    final playerMatchAction =
+        _getPlayerMatchAction(playerMatchStatus, user, match, isSpotsAvailable);
+
+    return Row(
+      children: <Widget>[
+        Expanded(child: Text(matchAvailabilityStatus)),
+        // SizedBox(
+        //     // width: 10,
+        //     // width: double.maxFinite,
+        //     ),
+        Text(playerMatchStatus.toUpperCase()),
+        TextButton(
+            onPressed: () =>
+                // TODO this should get a player somwhow
+
+                playerMatchAction.playerMatchActionCallback(),
+            child:
+                Text(playerMatchAction.playerMatchActionLabel.toUpperCase())),
+      ],
+    );
+  }
+
+  String _getPlayerMatchStatus(User? user, Match match) {
+    final userPlayers = match.players.where((p) => p.userId == user?.id);
+
+    if (userPlayers.isEmpty) return PlayerMatchStatusLabel.notJoined;
+
+    final userPlayer = userPlayers.first;
+
+    return userPlayer.matchStatus;
+  }
+
+// TODO probably should not be void
+  PlayerMatchAction _getPlayerMatchAction(String playerMatchStatus, User? user,
+      Match match, bool isSpotsAvailable) {
+// check if we are on waiting list
+
+    devService.log("player match status: $playerMatchStatus");
+    devService.log("player match status: $isSpotsAvailable");
+
+    final userPlayers = match.players.where((p) => p.userId == user?.id);
+
+    // if there is no spots available, we can either go to join or join waiting list
+    // so if
+
+    if (userPlayers.isEmpty) {
+      return PlayerMatchAction(PlayerMatchActionLabel.join, () async {
+        devService.log("Join match function");
+      });
+      // TODO we will have to make it available to decline the invite too
+
+    }
+
+    if (playerMatchStatus == PlayerMatchStatusLabel.onWaitingList) {
+      return PlayerMatchAction(
+        PlayerMatchActionLabel.unjoinWaitingList,
+        () async {
+          devService.log("Unjoin waiting list function");
+          await _playersController.unjoinPlayerMatchWaitingList(player);
+        },
+      );
+    }
+
+// from this point, we are not on waiting list
+    if (playerMatchStatus == PlayerMatchStatusLabel.joined) {
+      return PlayerMatchAction(
+        PlayerMatchActionLabel.unjoin,
+        () async {
+          devService.log("Unjoin waiting list function");
+        },
+      );
+    }
+
+// TODO need to rething this, but leave it buggy for now
+// from this point, we are not joined
+    if (!isSpotsAvailable) {
+      return PlayerMatchAction(
+        PlayerMatchActionLabel.joinWaitingList,
+        () async {
+          devService.log("Join waiting list function");
+        },
+      );
+    }
+
+    // from this point on spots ae available - and only option left if to accept invite
+    if (playerMatchStatus == PlayerMatchStatusLabel.invited) {
+      return PlayerMatchAction(
+        PlayerMatchActionLabel.acceptInvite,
+        () async {
+          devService.log("Accept invite function");
+        },
+        // TODO we will have to make it available to decline the invite too
+      );
+    }
+
+    // from this point, user is no longer invited
+    // if(play)
+  }
+
   // TODO test
   Widget _renderTabbableStatusedPlayers(List<Player> players) {
     final test = double.maxFinite;
-    devService.log("WHAQT IS MAX FINITE: $test");
     return DefaultTabController(
       length: 2,
       child: Column(
@@ -221,21 +300,15 @@ class _MatchScreenState extends State<MatchScreen> {
             height: 100,
             child: TabBarView(children: <Widget>[
               Column(
-                children: _renderPlayers(players, PlayerMatchStatus.joined),
+                children:
+                    _renderPlayers(players, PlayerMatchStatusLabel.joined),
               ),
               Column(
-                children: _renderPlayers(players, PlayerMatchStatus.invited),
+                children:
+                    _renderPlayers(players, PlayerMatchStatusLabel.invited),
               ),
             ]),
           ),
-          // TabBarView(children: <Widget>[
-          //   Column(
-          //     children: _renderPlayers(players, PlayerMatchStatus.joined),
-          //   ),
-          //   Column(
-          //     children: _renderPlayers(players, PlayerMatchStatus.invited),
-          //   ),
-          // ]),
         ],
       ),
     );
@@ -258,14 +331,9 @@ class _MatchScreenState extends State<MatchScreen> {
 
   Future<Match?> _handleLoadMatch(BuildContext context) async {
     // TODO later, erros should be just propagated from here
-    // int? matchId = context.getRouteArgument<int>();
-    // devService.log("gere");
-
-    // devService.log("match id: $matchId");/*  */
 
     final matchId = widget.matchId;
 
-    devService.log("up to here: $matchId");
     if (matchId == null) {
       // in this case, we would also probably return some error later
       // this would work with just returning null too
@@ -277,19 +345,22 @@ class _MatchScreenState extends State<MatchScreen> {
       final match = await _matchesController.loadMatch(matchId);
       return match;
     } catch (e) {
-      // devService.log(e);
       // TODO i would not want to handle stuff here - i there is error, should it be handled in the controller isntead
       devService.log(e);
       return null;
     }
   }
+}
 
-  // TODO test
-  // Future<List<User>> _handleSearchUsersByNickname(String nickname) async {
-  //   try {
-  //     final users = await _usersController.searchUsersByNickname(nickname);
-  //   } catch (e) {
-  //     devService.log("this is errror: $e");
-  //   }
-  // }
+// TODO this should go elsewhere - maybe some types, or models or something, not sure
+
+// typedef PlayerMatchActionCallback = void Function(Player player, Match match);
+typedef PlayerMatchActionCallback = Future<void> Function();
+
+class PlayerMatchAction {
+  final String playerMatchActionLabel;
+  final PlayerMatchActionCallback playerMatchActionCallback;
+
+  PlayerMatchAction(
+      this.playerMatchActionLabel, this.playerMatchActionCallback);
 }

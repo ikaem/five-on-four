@@ -20,8 +20,8 @@ class MatchesQueries {
       p.match_id as "player_match_id",
 	    u.nickname
     from "match" m 
-    left join player p on p.match_id = m.id 
-	left join user u on u.id = p.user_id
+      left join player p on p.match_id = m.id 
+	    left join user u on u.id = p.user_id
     group by 
       m.id,
       m."datetime",
@@ -53,7 +53,7 @@ class MatchesQueries {
     p.status as "player_status",
     p.match_id as "player_match_id",
 	  u.nickname as "nickname",
-    u.id as "user_id"
+    u.id as "player_user_id"
   from "match" m 
   left join player p on p.match_id = m.id
   left join user u on u.id = p.user_id

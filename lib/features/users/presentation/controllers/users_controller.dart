@@ -20,8 +20,6 @@ class UsersController {
   UsersController._internal();
 
   Future<List<User>> searchUsersByNickname(String nickname) async {
-    // devService.log("logging in the controller: $nickname");
-
     final users = await _usersService.searchUsers(nickname);
 
     return users;

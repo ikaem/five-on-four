@@ -22,8 +22,6 @@ class MatchesService {
   Future<Match?> getMatch(int matchId) async {
     final match = await _matchesRepositoryProvider.getOne(matchId);
 
-    // devService.log("MATCH IN service: $match");
-
     return match;
   }
 
@@ -39,8 +37,6 @@ class MatchesService {
      */
 
     final matchId = await _matchesRepositoryProvider.insertOne(args);
-
-    devService.log("match id: $matchId");
 
     return matchId;
   }

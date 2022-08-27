@@ -39,8 +39,6 @@ class AppRouter {
     // HERE we could define in auth is true, but it might not be needed, because intiial route might handle that
     // but later, if we have more protzected ones, we can handle it by cchecking if auth is valid
 
-    devService.log("this is in generate route: ${settings.name}");
-
     switch (settings.name) {
       case Routes.loginRoute:
         // return MaterialPageRoute(builder: (_) => HomeScreen());

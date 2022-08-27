@@ -3,6 +3,7 @@ import 'package:five_on_four/features/matches/domain/models/match.dart';
 import 'package:five_on_four/features/matches/index.dart';
 import 'package:five_on_four/features/matches/presentation/controllers/matches_controller.dart';
 import 'package:five_on_four/features/matches/presentation/widgets/match_brief.dart';
+import 'package:five_on_four/features/users/domain/models/user.dart';
 import 'package:five_on_four/navigation/app_router.dart';
 import 'package:five_on_four/services/dev/dev_service.dart';
 import 'package:five_on_four/widgets/app_bar_popup_menu/app_bar_popup_menu.dart';
@@ -20,7 +21,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authState = _authController.authState(context);
+    final User? currentUser = _authController.authState(context)?.user;
 
 // TODO this could be separated into tab navigation, for my profile, so not everything it crammed into one page
     return Scaffold(
@@ -87,25 +88,7 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(
                       width: 20,
                     ),
-                    Expanded(
-                      flex: 3,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        key: const Key("matches-invited"),
-                        children: <Widget>[
-                          Text(
-                            "You have 3 match invitations",
-                            style: Theme.of(context).textTheme.labelMedium,
-                          ),
-                          const SizedBox(
-                            height: 3,
-                          ),
-                          MatchInvite(match: testList[0]),
-                          MatchInvite(match: testList[1]),
-                          MatchInvite(match: testList[2]),
-                        ],
-                      ),
-                    ),
+                    _renderInvitedMatchesFromSteam(currentUser),
                   ],
                 ),
                 const Divider(),
@@ -133,7 +116,7 @@ class HomeScreen extends StatelessWidget {
                           players: []
                           // players: ["Luka", "Ivan", "Martina"],
                           ),
-                      playerMatchActionLabel: PlayerMatchAction.unjoin,
+                      playerMatchActionLabel: PlayerMatchActionLabel.unjoin,
                       handlePlayerMatchAction: () async {},
                     )
                   ],
@@ -183,7 +166,7 @@ class HomeScreen extends StatelessWidget {
               ),
               MatchBrief(
                 match: match,
-                playerMatchActionLabel: PlayerMatchAction.join,
+                playerMatchActionLabel: PlayerMatchActionLabel.join,
                 handlePlayerMatchAction: () async {},
               ),
             ],
@@ -191,19 +174,69 @@ class HomeScreen extends StatelessWidget {
         });
   }
 
+  // TODO all of these streams should probably using just one, and data should passed as arugments
+  // TODO better just pass matches
+  Widget _renderInvitedMatchesFromSteam(User? user) {
+    // TODO this will be a future builder, not stream builder
+    // TODO should probably swtich to bloc later, or that provider thing - check that website where folder structure is explained
+    final streamBuilder = StreamBuilder(
+        // stream: _matchesController.allMatchesStream,
+        stream: _matchesController.getMyInvitedMatchesStream(user),
+        builder: (BuildContext context, AsyncSnapshot<List<Match>> snapshot) {
+          final matches = snapshot.data;
+
+          if (matches == null) {
+            return const LoadingIndicator();
+          }
+
+// TODO this should be a different request i think - where it would jsut return matches that i am invited too
+
+          final lastRenderedInvitationIndex =
+              matches.length < 3 ? matches.length : 3;
+
+// TODO should be fitlered by creation date
+          final newestInvitations =
+              matches.sublist(0, lastRenderedInvitationIndex);
+
+          return Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              key: const Key("matches-invited"),
+              children: <Widget>[
+                Text(
+                  "You have ${matches.length} match invitations",
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                const SizedBox(
+                  // TODO height is bad here too
+                  height: 3,
+                ),
+// TODO should probably use list view builder later
+                for (Match invitedMatch in newestInvitations)
+                  MatchInvite(
+                      key: Key(invitedMatch.id.toString()),
+                      match: invitedMatch),
+              ],
+            ),
+          );
+        });
+
+    return streamBuilder;
+  }
+
   // TODO what does this return
   _renderFilteredMatchesFromStream(BuildContext context) {
     final streamBuilder = StreamBuilder(
-      stream: _matchesController.matchesStream,
+      stream: _matchesController.allMatchesStream,
       builder: (
+        // TODO context might not need to be passed
         BuildContext context,
         AsyncSnapshot<List<Match>> snapshot,
       ) {
         // TODO good link here
         // https: //stackoverflow.com/a/55528778
         final matches = snapshot.data;
-
-        // devService.log("passed");
 
         if (matches == null) {
           // SPIN SOMEHOW
@@ -226,7 +259,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   MatchBrief(
                     match: match,
-                    playerMatchActionLabel: PlayerMatchAction.join,
+                    playerMatchActionLabel: PlayerMatchActionLabel.join,
                     handlePlayerMatchAction: () async {},
                   ),
                 ],

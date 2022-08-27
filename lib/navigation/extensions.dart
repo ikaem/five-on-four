@@ -1,6 +1,8 @@
 import 'package:five_on_four/services/dev/dev_service.dart';
 import 'package:flutter/material.dart';
 
+// todo MIGHt not be needed
+// OR, use a bit of change possibly to reuse this in the aon generate route somewhoe
 extension NavigationExtension on BuildContext {
   T? getRouteArgument<T>() {
     // THIS IS THE BUILD CONTEXT IN THIS CASE
@@ -9,7 +11,6 @@ extension NavigationExtension on BuildContext {
 
     final args = route.settings.arguments;
 
-    devService.log("args here: $args");
     if (args == null) return null;
     if (args is! T) return null;
 

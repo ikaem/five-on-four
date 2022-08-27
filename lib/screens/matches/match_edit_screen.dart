@@ -288,7 +288,6 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
                 children: <Widget>[
                   TextButton(
                     onPressed: () {
-                      devService.log("Submitting new match");
                       _handleSubmitNewMatch(currentUser);
                     },
                     child: Text("Create match"),
@@ -296,9 +295,7 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
                         primary: Colors.white, backgroundColor: Colors.blue),
                   ),
                   TextButton(
-                    onPressed: () {
-                      devService.log("Submitting new match");
-                    },
+                    onPressed: () {},
                     child: Text("Cancel"),
                     style: TextButton.styleFrom(
                         primary: Colors.white, backgroundColor: Colors.black),
@@ -320,15 +317,12 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
     final state = _formKey.currentState;
     if (state == null) return;
 
-    devService.log("tis is form state: ${state}");
     // TODO this will redraw widget it things are not valid
     final isFormValid = state.validate();
 
     if (isFormValid == false) return;
 
     int? matchId;
-
-    devService.log("Now we are creating new match");
 
     // todo should probably have a function to format all this nicely and pass on to the controller?
     // or maybe controller can handle formatting, converting to date, time, milliseconds and so on, grab only ids from users and so on...
@@ -354,8 +348,6 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
       matchOrganizerPhoneNumber: $matchOrganizerPhoneNumber,
       invitedUsers: ${_invitedUsers.map((u) => u?.id)}
       ''';
-
-    devService.log(messageForShow);
 
 // TODO where should error handling happen? - here or in the controller?
 
@@ -409,9 +401,6 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
       return element != user;
     }).toList();
 
-    devService.log(
-        "printing elements remaining after filtering out removed user: ${users.map((u) => u?.nickname)}");
-
     // autocompleteController.dispose();
     setState(() {
       _invitedUsers = users;
@@ -419,7 +408,6 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
   }
 
   Widget _renderSingleUserAutocomplete(User? user, User? currentUser) {
-    devService.log("this is user in render single user: ${user?.nickname}");
     final autocomplete = Autocomplete<User>(
       key: Key(user?.nickname ?? "null-user"),
       initialValue: TextEditingValue(text: user?.nickname ?? ""),
@@ -436,9 +424,6 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
 
         final filteredUsers = users.where((userForInvite) {
           final isCurrentUser = userForInvite.id == currentUser?.id;
-          devService.log("user!!: ${userForInvite.nickname}");
-          devService.log("current user!!: ${currentUser?.nickname}");
-          devService.log("is current user: ${currentUser?.nickname}");
           if (isCurrentUser) return false;
 
           // TODO this is loop in a loop - this will lag a lot when a lot of users
@@ -499,10 +484,6 @@ class _MatchEditScreenState extends State<MatchEditScreen> {
         final indexOfUser = users.indexWhere((element) => element == user);
 
         users[indexOfUser] = selection;
-
-        devService.log("index of current user in users: $indexOfUser");
-
-        devService.log("users after user adjust: $users");
 
         setState(() {
           _invitedUsers = users;

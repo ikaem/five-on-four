@@ -13,34 +13,44 @@ class Player {
   late final String nickname;
   // TODO this shold later be some kind of enum type
   late final String matchStatus;
+  // TODO test
+  late final int matchId;
+  late final int userId;
 
   Player({
     required this.id,
     required this.nickname,
     required this.matchStatus,
+    required this.matchId,
+    required this.userId,
   });
 
   // TODO test
   Player.fromMatchDbRow(Map<String, Object?> row) {
-    // devService.log(row);
+    // devService.log("what is row? $row");
     // create constants for these?
     id = row["player_id"] as int;
     // nickname = row["player_nickname"] as String;
     nickname = row["nickname"] as String;
     // nickname = "Pero";
     matchStatus = row["player_status"] as String;
+    matchId = row["player_match_id"] as int;
+    userId = row["player_user_id"] as int;
   }
 
   factory Player.fromJson(Map<String, dynamic> json) {
     final id = json["id"];
     final nickname = json["nickname"];
     final matchStatus = json["match_status"];
+    final matchId = json["player_match_id"] as int;
+    final userId = json["player_user_id"] as int;
 
     return Player(
-      id: id,
-      nickname: nickname,
-      matchStatus: matchStatus,
-    );
+        id: id,
+        nickname: nickname,
+        matchStatus: matchStatus,
+        matchId: matchId,
+        userId: userId);
   }
 }
 

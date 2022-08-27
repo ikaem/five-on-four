@@ -12,7 +12,6 @@ class AuthStateInherited extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {
-    devService.log("testing that update should");
     return true;
   }
 

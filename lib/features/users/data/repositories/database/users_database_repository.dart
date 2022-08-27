@@ -14,8 +14,6 @@ class UsersDatabaseRepository implements UsersRepository {
     // TODO: implement searchMany
     // throw UnimplementedError();
 
-    // devService.log("loging in the repo: $nickname");
-
     final dbConnection = await _db.getConnection;
 
 // TODO example here https://stackoverflow.com/questions/55905892/how-to-query-the-sqflite-database-using-the-like-statement-and-the-or-sql-wi

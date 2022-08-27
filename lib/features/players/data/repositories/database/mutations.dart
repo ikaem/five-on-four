@@ -13,4 +13,20 @@ class PlayersMutations {
       ?
     );
   ''';
+
+  static String updatePlayer() => '''
+  update player 
+  set 
+    user_id = ?,
+    match_id = ?,
+    status = ?
+  where 
+    id = ?;
+  ''';
+
+  static String deletePlayer() => '''
+  delete from player 
+  where
+    id = ?;
+  ''';
 }

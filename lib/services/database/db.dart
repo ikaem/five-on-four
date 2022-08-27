@@ -1,3 +1,4 @@
+import 'package:five_on_four/features/matches/constants/player_match_status_label.dart';
 import 'package:five_on_four/features/matches/data/repositories/database/queries.dart';
 import 'package:five_on_four/services/database/constants.dart';
 import 'package:five_on_four/services/database/exceptions.dart';
@@ -195,8 +196,15 @@ class Db {
 
         for (var userRow in insertedUsersRows) {
           final userId = userRow["id"] as int;
+          final playerMatchStatus = userId == 1
+              ? PlayerMatchStatusLabel.invited
+              : PlayerMatchStatusLabel.joined;
 
-          batchPlayers.rawInsert(Seed.insertMatchPlayer(matchId, userId));
+          batchPlayers.rawInsert(Seed.insertMatchPlayer(
+            matchId,
+            userId,
+            playerMatchStatus,
+          ));
         }
       }
 

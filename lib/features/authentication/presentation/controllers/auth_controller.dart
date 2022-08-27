@@ -38,10 +38,7 @@ class AuthController {
     // final setAuth = AuthStateInherited.of(context)?.setAuth;
     // if (setAuth == null) return;
 
-    devService.log("loggin auth isnide its controller: $_auth");
-
     final loginAuth = await _authService.loginAuth();
-    // devService.log("inside");
 
     // setAuth(auth);
 
@@ -49,12 +46,7 @@ class AuthController {
     _auth = loginAuth;
     _authState.setAuth(loginAuth);
 
-    devService.log("this is login auth: $loginAuth");
-
     return _auth;
-
-    // final testAuth = authState(context);
-    // devService.log("after update auth: $testAuth");
   }
 
   Future<Auth?> checkSession() async {
@@ -66,7 +58,6 @@ class AuthController {
     // setAuth(auth);
 
     _auth = sessionAuth;
-    devService.log("this is session auth: $sessionAuth");
 
     _authState.setAuth(sessionAuth);
 

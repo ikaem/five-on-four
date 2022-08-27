@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:five_on_four/features/matches/application/services/matches_service.dart';
 import 'package:five_on_four/features/matches/data/repositories/matches_repository_provider.dart';
 import 'package:five_on_four/features/matches/domain/index.dart';
+import 'package:five_on_four/features/matches/index.dart';
 import 'package:five_on_four/features/matches/presentation/states/matches_state.dart';
 import 'package:five_on_four/features/users/domain/models/user.dart';
 import 'package:five_on_four/services/database/db.dart';
@@ -45,8 +46,6 @@ class MatchesController {
 
   Future<void> loadMatches() async {
     final matches = await _matchesService.getAllMatches();
-
-    // devService.log("matches here: $matches");
 
     _matchesState.cacheMatches(matches);
     // _cacheMatches(matches);
@@ -130,8 +129,6 @@ class MatchesController {
       isOrganizerJoining: isOrganizerJoining,
     );
 
-    devService.log("test log args: ${insertMatchArgs.matchInvitedUserIds}");
-
     // and now call service
 
     // TODO test return
@@ -141,7 +138,51 @@ class MatchesController {
     return matchId;
   }
 
-  Stream<List<Match>> get matchesStream => _matchesState.matchesStream;
+  // TODO this is terrible nested looping - database should be doing this
+  // TODO but i want to see how to filter a stream
+  Stream<List<Match>> getMyInvitedMatchesStream(User? user) {
+    final allMatchesSteam = allMatchesStream;
+
+    final stream = allMatchesSteam.where((eventMatches) {
+      List<Player> listOfAllPlayersInAllMatchesOfThisEvent = [];
+
+      final Map<int, Match> eventMatchesMap = {};
+
+      for (var match in eventMatches) {
+        eventMatchesMap[match.id] = match;
+
+        listOfAllPlayersInAllMatchesOfThisEvent =
+            listOfAllPlayersInAllMatchesOfThisEvent + match.players;
+      }
+      // devService.log(
+      //     "players: ${listOfAllPlayersInAllMatchesOfThisEvent.map((p) => p.userId)}");
+
+      // now want to find only me in the list
+
+      final List<Player> mePlayers = listOfAllPlayersInAllMatchesOfThisEvent
+          .where((p) => p.userId == user?.id)
+          .toList();
+
+      final meInvitedPlayers = mePlayers
+          .where((p) => p.matchStatus == PlayerMatchStatusLabel.invited)
+          .toList();
+
+      // now want to find only matches that match match ids in my list
+      final myMatches = meInvitedPlayers.map<Match>((p) {
+        return eventMatchesMap[p.matchId]!;
+      }).toList();
+
+      // devService.log("what are my matches here: $myMatches");
+
+      if (myMatches.isEmpty) return false;
+
+      return true;
+    });
+
+    return stream;
+  }
+
+  Stream<List<Match>> get allMatchesStream => _matchesState.matchesStream;
 }
 
 // this is test - this model, org args, should live somewhere else
